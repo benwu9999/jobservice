@@ -1,10 +1,13 @@
 package com.wungong.jobservice.utils;
 
+import org.springframework.stereotype.Component;
+
 import com.wungong.jobservice.model.Job;
 import com.wungong.jobservice.model.JobId;
 import com.wungong.jobservice.request.CreateJobRequest;
 import com.wungong.jobservice.request.UpdateJobRequest;
 
+@Component
 public class JobServiceUtils {
 
 	public Job convertToJob(JobId jobId, CreateJobRequest request) {

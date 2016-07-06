@@ -19,7 +19,7 @@ public class Job {
 	
 	private Benefits benefits;
 	
-	private Location location;
+	private Address location;
 	
 	private Employer employer;
 	

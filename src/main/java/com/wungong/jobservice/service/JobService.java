@@ -3,15 +3,16 @@ package com.wungong.jobservice.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.wungong.jobservice.model.Job;
 import com.wungong.jobservice.model.JobId;
 import com.wungong.jobservice.persistence.JobRepository;
 import com.wungong.jobservice.request.CreateJobRequest;
-import com.wungong.jobservice.request.DeleteJobRequest;
 import com.wungong.jobservice.request.UpdateJobRequest;
 import com.wungong.jobservice.utils.JobServiceUtils;
 
+@Component
 public class JobService {
 	
 	private final Logger log = LoggerFactory.getLogger(this.getClass());

@@ -2,9 +2,12 @@ package com.wungong.jobservice.persistence;
 
 import java.util.UUID;
 
+import org.springframework.stereotype.Component;
+
 import com.wungong.jobservice.model.Job;
 import com.wungong.jobservice.model.JobId;
 
+@Component
 public class JobRepositoryImpl implements JobRepository{
 
 	@Override

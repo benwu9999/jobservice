@@ -1,5 +1,11 @@
 package com.wungong.jobservice.model;
 
-public class JobType {
+public enum JobType {
+	
+	Temporary,
+	
+	Seasonal,
+	
+	Permanent
 
 }

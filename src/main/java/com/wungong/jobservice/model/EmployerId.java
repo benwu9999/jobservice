@@ -2,15 +2,15 @@ package com.wungong.jobservice.model;
 
 import java.util.UUID;
 
-public class JobId {
-
+public class EmployerId {
+	
 	final private UUID id;
 
-	public JobId(UUID id) {
+	public EmployerId(UUID id) {
 		this.id = id;
 	}
 	
-	public JobId(String id) {
+	public EmployerId(String id) {
 		this.id = UUID.fromString(id);
 	}
 	

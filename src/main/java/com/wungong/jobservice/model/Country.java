@@ -1,5 +1,7 @@
 package com.wungong.jobservice.model;
 
-public class Location {
+public enum Country {
 
+	US
+	
 }
