@@ -1,0 +1,7 @@
+CREATE TABLE jobs (
+  jobId uuid PRIMARY KEY,
+  jobType text,
+  title text,
+  description text,
+
+);

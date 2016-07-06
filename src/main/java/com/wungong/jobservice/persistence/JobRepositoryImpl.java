@@ -5,19 +5,18 @@ import java.util.UUID;
 import org.springframework.stereotype.Component;
 
 import com.wungong.jobservice.model.Job;
-import com.wungong.jobservice.model.JobId;
 
 @Component
 public class JobRepositoryImpl implements JobRepository{
 
 	@Override
-	public JobId jobId() {
+	public UUID jobId() {
 		// TODO Auto-generated method stub
-		return new JobId(UUID.randomUUID());
+		return UUID.randomUUID();
 	}
 
 	@Override
-	public Job jobOfId(JobId jobId) {
+	public Job jobOfId(UUID jobId) {
 		// TODO Auto-generated method stub
 		return null;
 	}

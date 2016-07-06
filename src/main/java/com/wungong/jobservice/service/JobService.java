@@ -1,12 +1,13 @@
 package com.wungong.jobservice.service;
 
+import java.util.UUID;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.wungong.jobservice.model.Job;
-import com.wungong.jobservice.model.JobId;
 import com.wungong.jobservice.persistence.JobRepository;
 import com.wungong.jobservice.request.CreateJobRequest;
 import com.wungong.jobservice.request.UpdateJobRequest;
@@ -24,13 +25,13 @@ public class JobService {
 	JobServiceUtils utils;
 
 	public void createJob(CreateJobRequest request) {
-		JobId jobId = jobRepository.jobId();
+		UUID jobId = jobRepository.jobId();
 		jobRepository.add(utils.convertToJob(jobId, request));
 		log.info("added job with jobId " + jobId);
 	}
 	
 	public void deleteJob(String id) {
-		JobId jobId = new JobId(id);
+		UUID jobId = UUID.fromString(id);
 		Job jobToDelete = jobRepository.jobOfId(jobId);
 		if(jobToDelete != null && jobRepository.remove(jobToDelete))
 			log.info("removed job with jobId " + jobId);
@@ -39,14 +40,14 @@ public class JobService {
 	}
 	
 	public void updateJob(UpdateJobRequest request) {
-		JobId jobId = new JobId(request.getJobId());
+		UUID jobId = UUID.fromString(request.getJobId());
 		Job jobToUpdate = jobRepository.jobOfId(jobId);
 		jobRepository.add(utils.updateJob(jobToUpdate, request));
 		log.info("updated job with jobId " + jobId);
 	}
 
 	public Job getJob(String id) {
-		JobId jobId = new JobId(id);
+		UUID jobId = UUID.fromString(id);
 		Job job = jobRepository.jobOfId(jobId);
 		log.info("retrieved job with jobId " + jobId);
 		return job;

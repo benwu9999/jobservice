@@ -5,7 +5,7 @@ import java.util.Date;
 import lombok.Data;
 
 @Data
-public class TimePeriod {
+public class Duration {
 	
 	private final Date startDate;
 	private final Date endDate;

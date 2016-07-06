@@ -5,8 +5,8 @@ import lombok.Data;
 @Data
 public class Compensation {
 	
-	private final Integer amount;
+	private final Double amount;
 	
-	private final TimePeriod timePeriod;
+	private final Duration duration;
 
 }

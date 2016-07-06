@@ -1,13 +1,12 @@
 package com.wungong.jobservice.request;
 
 import java.util.List;
+import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wungong.jobservice.model.Address;
 import com.wungong.jobservice.model.Benefits;
 import com.wungong.jobservice.model.Compensation;
 import com.wungong.jobservice.model.Duty;
-import com.wungong.jobservice.model.Employer;
 import com.wungong.jobservice.model.JobType;
 import com.wungong.jobservice.model.Skill;
 
@@ -28,7 +27,7 @@ public class CreateJobRequest {
 	
 	private Address location;
 	
-	private Employer employer;
+	private UUID employerId;
 	
 	private List<Duty> duties;
 	

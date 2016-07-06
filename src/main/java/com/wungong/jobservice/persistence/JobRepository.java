@@ -1,13 +1,14 @@
 package com.wungong.jobservice.persistence;
 
+import java.util.UUID;
+
 import com.wungong.jobservice.model.Job;
-import com.wungong.jobservice.model.JobId;
 
 public interface JobRepository {
 
-	JobId jobId();
+	UUID jobId();
 	
-	Job jobOfId(JobId jobId);
+	Job jobOfId(UUID jobId);
 
 	Boolean remove(Job jobToDelete);
 

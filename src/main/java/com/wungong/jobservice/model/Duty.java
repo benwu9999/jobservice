@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class Duty {
 	
-	private final String dutyDescription;
+	private final String description;
 
 }

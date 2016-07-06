@@ -1,16 +1,17 @@
 package com.wungong.jobservice.utils;
 
+import java.util.UUID;
+
 import org.springframework.stereotype.Component;
 
 import com.wungong.jobservice.model.Job;
-import com.wungong.jobservice.model.JobId;
 import com.wungong.jobservice.request.CreateJobRequest;
 import com.wungong.jobservice.request.UpdateJobRequest;
 
 @Component
 public class JobServiceUtils {
 
-	public Job convertToJob(JobId jobId, CreateJobRequest request) {
+	public Job convertToJob(UUID jobId, CreateJobRequest request) {
 		Job job = new Job(jobId);
 		setJobValues(request, job);
 		return job;
@@ -26,7 +27,7 @@ public class JobServiceUtils {
 		job.setCompensation(request.getCompensation());
 		job.setDescription(request.getDescription());
 		job.setDuties(request.getDuties());
-		job.setEmployer(request.getEmployer());
+		job.setEmployerId(request.getEmployerId());
 		job.setJobType(request.getJobType());
 		job.setLocation(request.getLocation());
 		job.setPreferedSkills(request.getPreferedSkills());

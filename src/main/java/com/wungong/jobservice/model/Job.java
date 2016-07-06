@@ -1,13 +1,14 @@
 package com.wungong.jobservice.model;
 
 import java.util.List;
+import java.util.UUID;
 
 import lombok.Data;
 
 @Data
 public class Job {
 	
-	final private JobId id;
+	final private UUID jobId;
 	
 	private JobType jobType;
 	
@@ -21,7 +22,7 @@ public class Job {
 	
 	private Address location;
 	
-	private Employer employer;
+	private UUID employerId;
 	
 	private List<Duty> duties;
 	

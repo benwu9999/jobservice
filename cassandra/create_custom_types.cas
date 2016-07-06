@@ -1,0 +1,25 @@
+CREATE TYPE jobservice.compensation (
+  amount decimal,
+  duration text
+);
+
+CREATE TYPE jobservice.benefits (
+  description text
+);
+
+CREATE TYPE jobservice.address (
+  state text,
+  country text,
+  aptNumber text,
+  streetAddress text,
+  city text,
+  zipCode int
+);
+
+CREATE TYPE jobservice.duty (
+  description text
+);
+
+CREATE TYPE jobservice.skill (
+  description text
+);
