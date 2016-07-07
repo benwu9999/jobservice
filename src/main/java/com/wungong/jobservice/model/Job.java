@@ -18,7 +18,7 @@ public class Job {
 	
 	private Compensation compensation;
 	
-	private Benefits benefits;
+	private List<Benefit> benefits;
 	
 	private Address location;
 	

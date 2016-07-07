@@ -1,7 +1,12 @@
 CREATE TABLE jobs (
-  jobId uuid PRIMARY KEY,
-  jobType text,
-  title text,
-  description text,
-
+	jobId uuid PRIMARY KEY,
+  	jobType text,
+  	title text,
+  	description text,
+	compensation frozen <compensation>,
+	benefits list<frozen <benefit>>,
+	location address,
+	duties list<frozen <duty>>,
+	requiredSkills list<frozen <skill>>,
+	preferedSkills list<frozen <skill>>
 );

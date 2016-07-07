@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.wungong.jobservice.model.Address;
-import com.wungong.jobservice.model.Benefits;
+import com.wungong.jobservice.model.Benefit;
 import com.wungong.jobservice.model.Compensation;
 import com.wungong.jobservice.model.Duty;
 import com.wungong.jobservice.model.JobType;
@@ -23,7 +23,7 @@ public class CreateJobRequest {
 	
 	private Compensation compensation;
 	
-	private Benefits benefits;
+	private List<Benefit> benefits;
 	
 	private Address location;
 	
