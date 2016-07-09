@@ -3,7 +3,7 @@ CREATE TYPE jobservice.compensation (
   duration text
 );
 
-CREATE TYPE jobservice.benefits (
+CREATE TYPE jobservice.benefit (
   description text
 );
 
