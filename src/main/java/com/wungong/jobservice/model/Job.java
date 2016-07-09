@@ -3,11 +3,13 @@ package com.wungong.jobservice.model;
 import java.util.List;
 import java.util.UUID;
 
-import lombok.Data;
+import org.springframework.data.cassandra.mapping.PrimaryKey;
+import org.springframework.data.cassandra.mapping.Table;
 
-@Data
+@Table
 public class Job {
 	
+	@PrimaryKey
 	final private UUID jobId;
 	
 	private JobType jobType;
