@@ -29,5 +29,93 @@ public class Job {
 	private List<Skill> requiredSkills;
 	
 	private List<Skill> preferedSkills;
+	
+	public Job(UUID jobId){
+		this.jobId = jobId;
+	}
+
+	public JobType getJobType() {
+		return jobType;
+	}
+
+	public void setJobType(JobType jobType) {
+		this.jobType = jobType;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public Compensation getCompensation() {
+		return compensation;
+	}
+
+	public void setCompensation(Compensation compensation) {
+		this.compensation = compensation;
+	}
+
+	public List<Benefit> getBenefits() {
+		return benefits;
+	}
+
+	public void setBenefits(List<Benefit> benefits) {
+		this.benefits = benefits;
+	}
+
+	public Address getLocation() {
+		return location;
+	}
+
+	public void setLocation(Address location) {
+		this.location = location;
+	}
+
+	public UUID getEmployerId() {
+		return employerId;
+	}
+
+	public void setEmployerId(UUID employerId) {
+		this.employerId = employerId;
+	}
+
+	public List<Duty> getDuties() {
+		return duties;
+	}
+
+	public void setDuties(List<Duty> duties) {
+		this.duties = duties;
+	}
+
+	public List<Skill> getRequiredSkills() {
+		return requiredSkills;
+	}
+
+	public void setRequiredSkills(List<Skill> requiredSkills) {
+		this.requiredSkills = requiredSkills;
+	}
+
+	public List<Skill> getPreferedSkills() {
+		return preferedSkills;
+	}
+
+	public void setPreferedSkills(List<Skill> preferedSkills) {
+		this.preferedSkills = preferedSkills;
+	}
+
+	public UUID getJobId() {
+		return jobId;
+	}
 
 }

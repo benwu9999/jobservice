@@ -7,4 +7,12 @@ public class Skill {
 	
 	private final String description;
 
+	public Skill(String description) {
+		this.description = description;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
 }

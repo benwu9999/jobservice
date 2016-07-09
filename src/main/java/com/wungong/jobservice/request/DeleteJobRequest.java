@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 public class DeleteJobRequest {
 
-	final private String jobId;
+//	final private String jobId;
 
 }
