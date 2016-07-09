@@ -3,14 +3,14 @@ package com.wungong.jobservice.model;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.data.cassandra.mapping.PrimaryKey;
-import org.springframework.data.cassandra.mapping.Table;
+import com.datastax.driver.mapping.annotations.PartitionKey;
+import com.datastax.driver.mapping.annotations.Table;
 
-@Table
+@Table(name = "jobs")
 public class Job {
 	
-	@PrimaryKey
-	final private UUID jobId;
+	@PartitionKey
+	private UUID jobId;
 	
 	private JobType jobType;
 	
@@ -32,6 +32,10 @@ public class Job {
 	
 	private List<Skill> preferedSkills;
 	
+	public void setJobId(UUID jobId) {
+		this.jobId = jobId;
+	}
+
 	public Job(UUID jobId){
 		this.jobId = jobId;
 	}

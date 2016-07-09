@@ -8,6 +8,7 @@ CREATE TABLE jobs (
 	compensation frozen <compensation>,
 	benefits list<frozen <benefit>>,
 	location frozen <address>,
+	employerId uuid,
 	duties list<frozen <duty>>,
 	requiredSkills list<frozen <skill>>,
 	preferedSkills list<frozen <skill>>

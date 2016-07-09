@@ -42,8 +42,20 @@
     	<version>2.0</version>
 	</dependency>
 	<dependency>
-	    <groupId>org.springframework.data</groupId>
-	    <artifactId>spring-data-cassandra</artifactId>
+	    <groupId>com.datastax.cassandra</groupId>
+	    <artifactId>cassandra-driver-core</artifactId>
+	    <version>3.0.2</version><!--$NO-MVN-MAN-VER$-->
+	</dependency>
+	<dependency>
+	  <groupId>com.datastax.cassandra</groupId>
+	  <artifactId>cassandra-driver-mapping</artifactId>
+	  <version>3.0.0</version><!--$NO-MVN-MAN-VER$-->
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/com.datastax.cassandra/cassandra-driver-extras -->
+	<dependency>
+	    <groupId>com.datastax.cassandra</groupId>
+	    <artifactId>cassandra-driver-extras</artifactId>
+	    <version>3.0.0-alpha5</version>
 	</dependency>
   </dependencies>
 </project>

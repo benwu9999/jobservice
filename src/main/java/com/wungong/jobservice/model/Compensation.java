@@ -1,16 +1,25 @@
 package com.wungong.jobservice.model;
 
-import lombok.Data;
+import com.datastax.driver.mapping.annotations.UDT;
 
+@UDT(keyspace = "jobservice", name = "compensation")
 public class Compensation {
 	
-	private final Double amount;
+	private Double amount;
 	
-	private final Duration duration;
+	private Duration duration;
 	
 	public Compensation(Double amount, Duration duration) {
 		super();
 		this.amount = amount;
+		this.duration = duration;
+	}
+
+	public void setAmount(Double amount) {
+		this.amount = amount;
+	}
+
+	public void setDuration(Duration duration) {
 		this.duration = duration;
 	}
 

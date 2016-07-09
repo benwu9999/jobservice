@@ -1,10 +1,11 @@
 package com.wungong.jobservice.model;
 
-import lombok.Data;
+import com.datastax.driver.mapping.annotations.UDT;
 
+@UDT(keyspace = "jobservice", name = "skill")
 public class Skill {
 	
-	private final String description;
+	private String description;
 
 	public Skill(String description) {
 		this.description = description;
@@ -12,6 +13,10 @@ public class Skill {
 
 	public String getDescription() {
 		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 }

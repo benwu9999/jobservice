@@ -1,15 +1,16 @@
 package com.wungong.jobservice.model;
 
-import lombok.Data;
+import com.datastax.driver.mapping.annotations.UDT;
 
+@UDT(keyspace = "jobservice", name = "address")
 public class Address {
 	
-	final private State state;
-	final private Country country;
-	final private String aptNumber;
-	final private String streeAddress;
-	final private String city;
-	final private Integer zipCode;
+	private State state;
+	private Country country;
+	private String aptNumber;
+	private String streeAddress;
+	private String city;
+	private Integer zipCode;
 	
 	public Address(State state, Country country, String aptNumber, String streeAddress, String city, Integer zipCode) {
 		this.state = state;
@@ -42,6 +43,30 @@ public class Address {
 
 	public Integer getZipCode() {
 		return zipCode;
+	}
+
+	public void setState(State state) {
+		this.state = state;
+	}
+
+	public void setCountry(Country country) {
+		this.country = country;
+	}
+
+	public void setAptNumber(String aptNumber) {
+		this.aptNumber = aptNumber;
+	}
+
+	public void setStreeAddress(String streeAddress) {
+		this.streeAddress = streeAddress;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public void setZipCode(Integer zipCode) {
+		this.zipCode = zipCode;
 	}
 
 }
