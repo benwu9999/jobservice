@@ -15,9 +15,6 @@ import com.wungong.jobservice.utils.Settings;
 public class JobRepositoryImpl implements JobRepository{
 	
 	@Autowired
-	Settings settings;
-	
-	@Autowired
 	CassandraOperations cassandraTemplate;
 
 	@Override
@@ -39,7 +36,8 @@ public class JobRepositoryImpl implements JobRepository{
 	}
 
 	@Override
-	public void add(Job convertToJob) {
+	public void add(Job job) {
+		cassandraTemplate.insert(job);
 	}
 	
 }

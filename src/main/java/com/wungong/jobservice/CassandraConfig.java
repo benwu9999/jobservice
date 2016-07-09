@@ -29,12 +29,14 @@ public class CassandraConfig {
   private Environment env;
 
   @Bean
-  public CassandraClusterFactoryBean cluster() {
+  public CassandraClusterFactoryBean cluster() throws Exception {
 
     CassandraClusterFactoryBean cluster = new CassandraClusterFactoryBean();
-    cluster.setContactPoints(env.getProperty("cassandra.contactpoints"));
-    cluster.setPort(Integer.parseInt(env.getProperty("cassandra.port")));
-
+//    cluster.setContactPoints(env.getProperty("cassandra.contactpoints"));
+//    cluster.setPort(Integer.parseInt(env.getProperty("cassandra.port")));
+    cluster.setContactPoints("localhost");
+    cluster.setPort(9042);
+    cluster.afterPropertiesSet();
     return cluster;
   }
 
@@ -53,10 +55,11 @@ public class CassandraConfig {
 
     CassandraSessionFactoryBean session = new CassandraSessionFactoryBean();
     session.setCluster(cluster().getObject());
-    session.setKeyspaceName(env.getProperty("cassandra.keyspace"));
+//    session.setKeyspaceName(env.getProperty("cassandra.keyspace"));
+    session.setKeyspaceName("jobservice");
     session.setConverter(converter());
     session.setSchemaAction(SchemaAction.NONE);
-
+    session.afterPropertiesSet();
     return session;
   }
 
