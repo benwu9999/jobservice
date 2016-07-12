@@ -19,7 +19,3 @@ CREATE TYPE jobservice.address (
 CREATE TYPE jobservice.duty (
   description text
 );
-
-CREATE TYPE jobservice.skill (
-  description text
-);
