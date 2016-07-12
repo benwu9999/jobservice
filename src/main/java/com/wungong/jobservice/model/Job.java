@@ -28,9 +28,9 @@ public class Job {
 	
 	private List<Duty> duties;
 	
-	private List<Skill> requiredSkills;
+	private List<UUID> requiredSkillIds;
 	
-	private List<Skill> preferedSkills;
+	private List<UUID> preferedSkillIds;
 	
 	public void setJobId(UUID jobId) {
 		this.jobId = jobId;
@@ -104,20 +104,20 @@ public class Job {
 		this.duties = duties;
 	}
 
-	public List<Skill> getRequiredSkills() {
-		return requiredSkills;
+	public List<UUID> getRequiredSkillIds() {
+		return requiredSkillIds;
 	}
 
-	public void setRequiredSkills(List<Skill> requiredSkills) {
-		this.requiredSkills = requiredSkills;
+	public void setRequiredSkillIds(List<UUID> requiredSkillIds) {
+		this.requiredSkillIds = requiredSkillIds;
 	}
 
-	public List<Skill> getPreferedSkills() {
-		return preferedSkills;
+	public List<UUID> getPreferedSkillIds() {
+		return preferedSkillIds;
 	}
 
-	public void setPreferedSkills(List<Skill> preferedSkills) {
-		this.preferedSkills = preferedSkills;
+	public void setPreferedSkillIds(List<UUID> preferedSkillIds) {
+		this.preferedSkillIds = preferedSkillIds;
 	}
 
 	public UUID getJobId() {

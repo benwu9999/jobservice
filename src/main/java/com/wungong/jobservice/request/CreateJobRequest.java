@@ -8,11 +8,7 @@ import com.wungong.jobservice.model.Benefit;
 import com.wungong.jobservice.model.Compensation;
 import com.wungong.jobservice.model.Duty;
 import com.wungong.jobservice.model.JobType;
-import com.wungong.jobservice.model.Skill;
 
-import lombok.Data;
-
-@Data
 public class CreateJobRequest {
 	
 	private JobType jobType;
@@ -31,13 +27,13 @@ public class CreateJobRequest {
 	
 	private List<Duty> duties;
 	
-	private List<Skill> requiredSkills;
+	private List<UUID> requiredSkillIds;
 	
-	private List<Skill> preferedSkills;
+	private List<UUID> preferedSkillIds;
 
 	public CreateJobRequest(JobType jobType, String title, String description, Compensation compensation,
-			List<Benefit> benefits, Address location, UUID employerId, List<Duty> duties, List<Skill> requiredSkills,
-			List<Skill> preferedSkills) {
+			List<Benefit> benefits, Address location, UUID employerId, List<Duty> duties, List<UUID> requiredSkills,
+			List<UUID> preferedSkills) {
 		this.jobType = jobType;
 		this.title = title;
 		this.description = description;
@@ -46,8 +42,8 @@ public class CreateJobRequest {
 		this.location = location;
 		this.employerId = employerId;
 		this.duties = duties;
-		this.requiredSkills = requiredSkills;
-		this.preferedSkills = preferedSkills;
+		this.requiredSkillIds = requiredSkills;
+		this.preferedSkillIds = preferedSkills;
 	}
 
 	public JobType getJobType() {
@@ -114,20 +110,20 @@ public class CreateJobRequest {
 		this.duties = duties;
 	}
 
-	public List<Skill> getRequiredSkills() {
-		return requiredSkills;
+	public List<UUID> getRequiredSkillIds() {
+		return requiredSkillIds;
 	}
 
-	public void setRequiredSkills(List<Skill> requiredSkills) {
-		this.requiredSkills = requiredSkills;
+	public void setRequiredSkillIds(List<UUID> requiredSkillIds) {
+		this.requiredSkillIds = requiredSkillIds;
 	}
 
-	public List<Skill> getPreferedSkills() {
-		return preferedSkills;
+	public List<UUID> getPreferedSkillIds() {
+		return preferedSkillIds;
 	}
 
-	public void setPreferedSkills(List<Skill> preferedSkills) {
-		this.preferedSkills = preferedSkills;
+	public void setPreferedSkillIds(List<UUID> preferedSkillIds) {
+		this.preferedSkillIds = preferedSkillIds;
 	}
 
 }

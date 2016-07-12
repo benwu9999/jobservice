@@ -30,8 +30,8 @@ public class JobServiceUtils {
 		job.setEmployerId(request.getEmployerId());
 		job.setJobType(request.getJobType());
 		job.setLocation(request.getLocation());
-		job.setPreferedSkills(request.getPreferedSkills());
-		job.setRequiredSkills(request.getRequiredSkills());
+		job.setPreferedSkillIds(request.getPreferedSkillIds());
+		job.setRequiredSkillIds(request.getRequiredSkillIds());
 		job.setTitle(request.getTitle());
 	}
 
