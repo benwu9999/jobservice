@@ -21,9 +21,8 @@ class JobpostList(APIView):
 		comp_list = Compensation.objects.values()
 		comp_map = {x['jobpost_id']:x for x in comp_list}
 		for x in querysets:
-			x.update({'compensation':{'amount':comp_map[x['jobPostId']]['amount'],'duration':comp_map[x['jobPostId']]['duration']}})
-		queryset = [x for x in querysets]
-		serializer = JobpostSerializer(queryset, many=True)
+			x.update({'compensation':comp_map[x['jobPostId']]})
+		serializer = JobpostSerializer(querysets, many=True)
 		return Response(serializer.data)
 
 	def post(self, request, format=None):
