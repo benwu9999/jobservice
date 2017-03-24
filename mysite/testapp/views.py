@@ -15,7 +15,13 @@ from django.http import Http404
 from rest_framework import status
 
 class JobpostList(APIView):
-
+	"""
+	get:
+	Return a list of jobPosts
+	
+	post:
+	Create a new job post instance
+	"""
 	def get(self, request, format=None):
 		querysets = Jobpost.objects.values()
 		comp_list = Compensation.objects.values()
@@ -33,23 +39,33 @@ class JobpostList(APIView):
 		return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class JobpostDetail(APIView):
+	"""
+	get:
+	Return a jobPost instance
+
+	put:
+	Modify a jobPost instance
+
+	delete:
+	remove the jobPost instance
+	"""
 	def get_object(self,pk):
 	    try:
-               return Jobpost.objects.values().get(pk=pk)
+	       jobpost = Jobpost.objects.values().get(pk=pk)
+               comp = Compensation.objects.values('amount','duration').get(jobpost_id=pk)
+               jobpost.update({'compensation':comp})
+               return jobpost
 	    except Jobpost.DoesNotExist:
                 raise Http404
+
 	def get(self, request, pk, format=None):
-	    queryset = self.get_object(pk=pk)
-	    comp = Compensation.objects.values('amount','duration').get(jobpost_id=pk)
-	    queryset.update({'compensation':comp})
-	    serializer = JobpostSerializer(data=queryset)
+	    jobpost = self.get_object(pk=pk)
+	    serializer = JobpostSerializer(data=jobpost)
 	    serializer.is_valid()
 	    return Response(serializer.data)
 
 	def put(self,request, pk, format=None):
 	    jobpost = self.get_object(pk=pk)
-	    comp = Compensation.objects.values('amount','duration').get(jobpost_id=pk)
-            jobpost.update({'compensation':{'amount':comp['amount'],'duration':comp['duration']}})
             serializer = JobpostSerializer(jobpost,data=request.data)
 	    if serializer.is_valid():
 		serializer.save()
@@ -60,3 +76,11 @@ class JobpostDetail(APIView):
 	    jobpost = Jobpost.objects.get(pk=pk)
 	    jobpost.delete()
 	    return Response(status=status.HTTP_204_NO_CONTENT)
+
+class AllIdsList(APIView):
+        """
+        Return a list of jobPostIds
+        """
+        def get(self, request, format=None):
+                allIdList=sorted([x['jobPostId'] for x in Jobpost.objects.values('jobPostId')])
+                return Response(data=allIdList)

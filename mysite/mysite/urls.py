@@ -15,8 +15,15 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from rest_framework.documentation import include_docs_urls
+from django.conf.urls import handler404
+from django.views.generic.base import RedirectView
 
 urlpatterns = [
     url(r'^',include('testapp.urls')),
     url(r'^admin/', admin.site.urls),
+    url(r'^docs/', include_docs_urls(title='API Info'), name='APIInfo'),
+    url(r'^.*$', RedirectView.as_view(url='/docs/', permanent=False)),
 ]
+
+
