@@ -6,13 +6,12 @@ from django.http import HttpResponse
 def index(request):
 	return HttpResponse("Hello World! This is our Test App.")
 
-from rest_framework import generics
+from rest_framework import generics, status
 from testapp.models import Jobpost, Compensation
 from testapp.serializers import JobpostSerializer, CompensationSerializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.http import Http404
-from rest_framework import status
 
 class JobpostList(APIView):
 	"""

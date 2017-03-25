@@ -78,10 +78,10 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 DATABASES = {
     'default': {
 	'ENGINE':'django.db.backends.mysql',
-	'NAME':'bpenv',
-	'USER':'bpuser',
-	'PASSWORD':'Aa10118786',
-	'HOST':'localhost',
+	'NAME':'jobpost_database',
+	'USER':'jobpost_appuser',
+	'PASSWORD':'jobpost8531162',
+	'HOST':'127.0.0.1',
 	'PORT':'3306',		
         }
 }

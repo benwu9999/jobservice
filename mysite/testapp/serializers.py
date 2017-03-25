@@ -2,11 +2,17 @@ from rest_framework import serializers
 from testapp.models import Jobpost, Compensation
 
 class CompensationSerializer(serializers.ModelSerializer):
+	"""
+	Serializer to convert Compensation object data to primitive Python Data types
+	"""
 	class Meta:
 		model=Compensation
 		fields=('amount','duration')
 
 class JobpostSerializer(serializers.ModelSerializer):
+	"""
+	Serializer to conver Jobpost object data to primitive Python Data types
+	"""
 	compensation=CompensationSerializer()
 
 	class Meta:
