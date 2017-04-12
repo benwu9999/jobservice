@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from testapp.models import Jobpost, Compensation
+from jobpostapp.models import Jobpost, Compensation
 
 class CompensationSerializer(serializers.ModelSerializer):
 	"""
