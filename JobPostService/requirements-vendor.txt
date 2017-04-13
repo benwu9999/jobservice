@@ -14,3 +14,4 @@ pyparsing==2.2.0
 requests==2.13.0
 six==1.10.0
 uritemplate==3.0.0
+setuptools==34.3.3
