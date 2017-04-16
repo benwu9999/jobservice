@@ -2,6 +2,7 @@
 runtime: python27
 api_version: 10
 threadsafe: yes
+service: job-post-service 
 
 handlers:
 - url: /static
