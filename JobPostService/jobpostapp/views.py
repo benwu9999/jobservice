@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 
 def index(request):
-	return HttpResponse("Hello World! This is our Test App.")
+	return HttpResponse("Hello World! This is our Job Post App.")
 
 from rest_framework import generics, status
 from jobpostapp.models import Jobpost, Compensation
