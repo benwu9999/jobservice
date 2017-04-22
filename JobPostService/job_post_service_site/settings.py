@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
+from corsheaders.defaults import default_headers
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -38,20 +39,49 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'testapp.apps.TestappConfig',
+    'corsheaders', # for allowing CORS
+    'job_post_service.apps.JobPostServiceConfig',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware', # for allowing CORS
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'mysite.urls'
+# ------------- start of CSRF settings, not needed if your endpoints are not CSRF protected -----
+
+# This setting is ONLY for handling request from Angular2 client
+# allow django server to take field named "X-XSRF-TOKEN" in request header from client.
+# angular2 sets CRSF token in header with name "X-XSRF-TOKEN" by default
+CORS_ALLOW_HEADERS = default_headers + (
+    'X-XSRF-TOKEN',
+)
+
+# the default name of expected CSRF token is csrftoken by django
+# change it to 'x-xsrf-token', the commonly expected name
+# this IS case sensitive
+CSRF_COOKIE_NAME = 'XSRF-TOKEN'
+# ------------- end of CSRF settings, not needed if your endpoints are not CSRF protected -----
+
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ORIGIN_WHITELIST = (
+    'http://localhost:4200'
+)
+
+REST_FRAMEWORK = {
+    'DEFAULT_PARSER_CLASSES': (
+        'rest_framework.parsers.JSONParser',
+    )
+}
+
+ROOT_URLCONF = 'job_post_service_site.urls'
 
 TEMPLATES = [
     {
@@ -69,7 +99,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'mysite.wsgi.application'
+WSGI_APPLICATION = 'job_post_service_site.wsgi.application'
 
 
 # Database
@@ -82,8 +112,8 @@ if  os.getenv('SERVER_SOFTWARE', '').startswith('Google App Engine'):
         'default': {
             'ENGINE': 'django.db.backends.mysql',
             'HOST': '/cloudsql/perfect-entry-162216:us-east1:jobpost-instance',
-            'NAME': 'jobpost_database',
-            'USER': 'jobpost_appuser',
+            'NAME': 'job_post',
+            'USER': 'oneseek',
             'PASSWORD': 'jobpost8531162',
         }
     }
@@ -99,8 +129,8 @@ else:
             'ENGINE': 'django.db.backends.mysql',
             'HOST': '127.0.0.1',
             'PORT': '3306',
-            'NAME': 'jobpost_database',
-            'USER': 'jobpost_appuser',
+            'NAME': 'job_post',
+            'USER': 'oneseek',
             'PASSWORD': 'jobpost8531162',
         }
     }

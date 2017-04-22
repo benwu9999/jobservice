@@ -1,0 +1,15 @@
+setup using pycharm
+1. This project requires Django which requires MYSQL dependency
+install MYSQL dependency (probably a "native" lib)
+2. install MYSQL on your local machine, make sure it's running
+    a. create database, in mysql client(in terminal type "mysql"):
+    create database job_post;
+    b. create user to access the new database, this user is from settings.py in this project
+    in mysql client, create the user along with password, user and password should match settings.py
+    i.e.:
+    grant all privileges on job_post.* to 'oneseek'@'localhost' identified by "jobpost8531162";
+sudo apt-get install libmysqlclient-dev
+3. In pycharm python integration tools, point pycharm to look at
+requirements.txt
+4. install pop up should appear in pycharm, install the dependency
+5. run manage.py runserver
