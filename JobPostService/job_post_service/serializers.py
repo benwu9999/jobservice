@@ -16,38 +16,32 @@ class JobPostSerializer(serializers.ModelSerializer):
     """
     Serializer to conver JobPost object data to primitive Python Data types
     """
-    # compensationSerializer = CompensationSerializer()
+    compensation = CompensationSerializer(many=False)
 
     class Meta:
         model = JobPost
         fields = ('jobPostId', 'title', 'description', 'employerProfileId', 'locationId', 'compensation', 'at')
 
     def create(self, validated_data):
-        # compensation_data = validated_data.pop('compensation')
-        jobPost = JobPost.objects.create(**validated_data)
+        compensation_data = validated_data.pop('compensation')
+        compensation = Compensation.objects.create(**compensation_data)
+        jobPost = JobPost.objects.create(compensation=compensation, **validated_data)
         self.is_valid(raise_exception=True)
         jobPost.save()
-        # Compensation.objects.create(jobpost=jobpost, **compensation_data)
-        # validated_data.update({'compensation': compensation_data})
-        # validated_data.update({'at': jobpost.at})
-        # validated_data.update({'jobPostId': jobpost.jobPostId})
-        # return validated_data
-
-    def update(self, jobPost, validated_data):
-        # instance.update(validated_data)
-
-        # compensation_data = validated_data.pop('compensation')
-        # compensation = Compensation.objects.get(jobpost_id=instance['jobPostId'])
-        # compensation.amount = compensation_data['amount']
-        # compensation.duration = compensation_data['duration']
-
-        jobPost.at = validated_data['at']
-        jobPost.title = validated_data['title']
-        jobPost.description = validated_data['description']
-        jobPost.employerProfileId = validated_data['employerProfileId']
-        jobPost.locationId = validated_data['locationId']
-        jobPost.save()
-
-        # compensation.save()
-
         return jobPost
+
+    def update(self, instance, validated_data):
+        compensation_data = validated_data.pop('compensation')
+        compensation = instance.compensation
+
+        instance.title = validated_data['title']
+        instance.description = validated_data['description']
+        instance.employerProfileId = validated_data['employerProfileId']
+        instance.locationId = validated_data['locationId']
+        instance.save()
+        
+        compensation.amount = compensation_data['amount']
+        compensation.duration = compensation_data['duration']
+        compensation.save()
+
+        return instance
