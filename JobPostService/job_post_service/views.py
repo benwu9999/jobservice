@@ -49,6 +49,9 @@ class JobPostList(generics.ListCreateAPIView):
 
 
 class JobPostDetail(generics.RetrieveUpdateDestroyAPIView):
+
+    # override the default lookup field "PK" with the lookup field for this model
+    lookup_field = 'jobPostId'
     queryset = JobPost.objects.all()
     serializer_class = JobPostSerializer
 
