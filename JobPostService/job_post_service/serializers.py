@@ -24,7 +24,10 @@ class JobPostSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         compensation_data = validated_data.pop('compensation')
+
+        # create and insert compensation into db ONLY if it doesn't already exists, using "get_or_create"
         compensation, created = Compensation.objects.get_or_create(**compensation_data)
+
         jobPost = JobPost.objects.create(compensation=compensation, **validated_data)
         self.is_valid(raise_exception=True)
         jobPost.save()
