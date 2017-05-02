@@ -56,8 +56,8 @@ MIDDLEWARE = [
 
 # ------------- start of CSRF settings, not needed if your endpoints are not CSRF protected -----
 
-# This setting is ONLY for handling request from Angular2 client
-# allow django server to take field named "X-XSRF-TOKEN" in request header from client.
+# This setting is ONLY for handling request from Angular2 job_post_service_client
+# allow django server to take field named "X-XSRF-TOKEN" in request header from job_post_service_client.
 # angular2 sets CRSF token in header with name "X-XSRF-TOKEN" by default
 CORS_ALLOW_HEADERS = default_headers + (
     'X-XSRF-TOKEN',
