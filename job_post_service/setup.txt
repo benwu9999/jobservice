@@ -1,7 +1,10 @@
 setup using pycharm
 1. This project requires Django which requires MYSQL dependency
 install MYSQL dependency (probably a "native" lib)
-2. install MYSQL on your local machine, make sure it's running
+2. setup MYSQL for data storage, you can either method a) or b)
+ a) connect to Google Cloud's SQL instance using Google's "Cloud SQL Proxy"
+    See https://cloud.google.com/python/django/appengine
+ b) install MYSQL on your local machine, make sure it's running
     a. create database, in mysql client(in terminal type "mysql"):
     create database job_post;
     b. create user to access the new database, this user is from settings.py in this project
