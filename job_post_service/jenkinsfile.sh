@@ -17,13 +17,11 @@ clean_up()
     echo "Virtual Environment Removal"
     if [ -d ${virtual_dir} ]; then
         echo "removing virtual environment directory"
-        rm -r $virtual_dir || { return 1; }
+        rm -r ${virtual_dir} || { return 1; }
         echo "removal successful"
     else
         echo "${virtual_dir} does not exist"
     fi
-
-
 
     return 0
 }
@@ -39,7 +37,7 @@ finish()
 
 
 echo "step 1: Create Virtual Environment"
-virtualenv ${virtual_dir}  || { echo "Virtualenv failed"; exit 1; }
+virtualenv ${virtual_dir}  || { finish "Virtualenv failed" 1; }
 
 echo "step 2: Activate Virtual Environment"
 . ${virtual_dir}/bin/activate || { finish "Activation failed" 1; }
