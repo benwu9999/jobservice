@@ -1,7 +1,7 @@
 #!/bin/sh -x
 
 shared_dir=/home/sharedFolder
-virtual_dir=/home/sharedFolder/tempenv
+virtual_dir=/home/sharedFolder/jobPostEnv
 project_dir=$WORKSPACE/job_post_service
 
 clean_up()
@@ -14,14 +14,15 @@ clean_up()
         echo "deactivation successful"
     fi
 
-    echo "Virtual Environment Removal"
-    if [ -d ${virtual_dir} ]; then
-        echo "removing virtual environment directory"
-        rm -r ${virtual_dir} || { return 1; }
-        echo "removal successful"
-    else
-        echo "${virtual_dir} does not exist"
-    fi
+## PERSIST MicroService VirtualEnvironment##################
+##    echo "Virtual Environment Removal"
+##    if [ -d ${virtual_dir} ]; then
+##        echo "removing virtual environment directory"
+##        rm -r ${virtual_dir} || { return 1; }
+##        echo "removal successful"
+##    else
+##        echo "${virtual_dir} does not exist"
+##    fi
 
     return 0
 }
@@ -37,7 +38,9 @@ finish()
 
 
 echo "step 1: Create Virtual Environment"
-virtualenv ${virtual_dir}  || { finish "Virtualenv failed" 1; }
+if [ ! -d ${virtual_dir} ]; then
+    virtualenv ${virtual_dir}  || { finish "Virtualenv failed" 1; }
+fi
 
 echo "step 2: Activate Virtual Environment"
 . ${virtual_dir}/bin/activate || { finish "Activation failed" 1; }
