@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders', # for allowing CORS
-    'job_post_service.apps.JobPostServiceConfig',
+    'job_post_app.apps.JobPostServiceConfig',
 ]
 
 MIDDLEWARE = [
@@ -56,8 +56,8 @@ MIDDLEWARE = [
 
 # ------------- start of CSRF settings, not needed if your endpoints are not CSRF protected -----
 
-# This setting is ONLY for handling request from Angular2 job_post_service_client
-# allow django server to take field named "X-XSRF-TOKEN" in request header from job_post_service_client.
+# This setting is ONLY for handling request from Angular2 application_client
+# allow django server to take field named "X-XSRF-TOKEN" in request header from application_client.
 # angular2 sets CRSF token in header with name "X-XSRF-TOKEN" by default
 CORS_ALLOW_HEADERS = default_headers + (
     'X-XSRF-TOKEN',
@@ -81,7 +81,7 @@ REST_FRAMEWORK = {
     )
 }
 
-ROOT_URLCONF = 'job_post_service_site.urls'
+ROOT_URLCONF = 'admin_site.urls'
 
 TEMPLATES = [
     {
@@ -99,7 +99,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'job_post_service_site.wsgi.application'
+WSGI_APPLICATION = 'admin_site.wsgi.application'
 
 
 # Database

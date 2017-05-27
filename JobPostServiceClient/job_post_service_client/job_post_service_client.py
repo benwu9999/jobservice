@@ -1,14 +1,15 @@
 import json
 import urllib2
+import os
 
 class JobPostServiceClient:
 
-    URL = 'http://127.0.0.1:8000/jobPost'
+    URL = os.getenv('JOB_POST_SVC_URL', 'http://127.0.0.1:8000/jobPost/');
 
     def get(self, job_post_id):
         if not job_post_id:
             return None;
-        parsed = json.load(urllib2.urlopen("http://127.0.0.1:8000/jobPost/" + job_post_id))
+        parsed = json.load(urllib2.urlopen(self.URL + job_post_id))
         return json.dumps(parsed, indent=4, sort_keys=True)
 
     def get_ids(self):
