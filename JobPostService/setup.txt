@@ -11,8 +11,19 @@ install MYSQL dependency (probably a "native" lib)
     in mysql client, create the user along with password, user and password should match settings.py
     i.e.:
     grant all privileges on job_post.* to 'oneseek'@'localhost' identified by "jobpost8531162";
+ c) when creating database for this project, use character set UTF8 to support Chinese characters:
+    i.e., if the database job_post already exists, to set it to use UTF8 character set, run this command in mysql client:
+    ALTER DATABASE job_post CHARACTER SET utf8 COLLATE utf8_general_ci;
 sudo apt-get install libmysqlclient-dev
 3. In pycharm python integration tools, point pycharm to look at
 requirements.txt
 4. install pop up should appear in pycharm, install the dependency
 5. run manage.py runserver
+
+
+sample compensation json string for "http://localhost:8000/docs/"
+
+{
+    "amount": 1,
+    "duration": "day"
+}
