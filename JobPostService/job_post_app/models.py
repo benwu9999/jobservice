@@ -26,11 +26,11 @@ class JobPost(models.Model):
     class Meta:
         db_table = 'job_post'
 
-    jobPostId = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    job_post_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=200, null=True)
     description = models.CharField(max_length=200, null=True)
-    employerProfileId = models.CharField(max_length=200, null=True)
-    locationId = models.CharField(max_length=200, null=True)
+    employer_profile_id = models.CharField(max_length=200, null=True)
+    location_id = models.CharField(max_length=200, null=True)
     at = models.DateTimeField(auto_now=True, null=True)
     compensation = models.ForeignKey(
         Compensation,

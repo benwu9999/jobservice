@@ -5,9 +5,12 @@ install MYSQL dependency (probably a "native" lib)
  a) connect to Google Cloud's SQL instance using Google's "Cloud SQL Proxy"
     See https://cloud.google.com/python/django/appengine
  b) install MYSQL on your local machine, make sure it's running
-    a. create database, in mysql client(in terminal type "mysql"):
+    a. login to mysql client as root, password for root should be 'root', run this command and
+    type in the password when prompted:
+    mysql -u root -p
+    b. create database , in mysql client(in terminal type "mysql"), run this command:
     create database job_post;
-    b. create user to access the new database, this user is from settings.py in this project
+    c. create user to access the new database, this user is from settings.py in this project
     in mysql client, create the user along with password, user and password should match settings.py
     i.e.:
     grant all privileges on job_post.* to 'oneseek'@'localhost' identified by "jobpost8531162";

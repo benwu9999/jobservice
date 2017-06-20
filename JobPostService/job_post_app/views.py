@@ -39,6 +39,13 @@ class JobPostList(generics.ListCreateAPIView):
     queryset = JobPost.objects.all()
     serializer_class = JobPostSerializer
 
+    def get(self, request, *args, **kwargs):
+        if 'by' in request.data:
+            profile_ids = request.data.pop('by').split(',')
+            return JobPost.objects.filter(employer_profile_id__in = profile_ids)
+        else:
+            return self.list(request, *args, **kwargs)
+
     def create(self, request, *args, **kwargs):
         job_post_data = request.data.pop('jobPost')
         job_post_data['employerProfileId'] = job_post_data['employerProfile']['profileId']
