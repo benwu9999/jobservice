@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 from django.db import models
 import uuid
 
+# fields in model will use camel case so django can parse json which is also camel case
 
 # Create your models here.
 class Compensation(models.Model):
@@ -13,7 +14,7 @@ class Compensation(models.Model):
         db_table = 'compensation'
         # unique_together = ("amount", "duration")
 
-    compensationId = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    compensation_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     amount = models.IntegerField(default=0, null=True)
     duration = models.CharField(max_length=200, null=True)
 
@@ -37,7 +38,8 @@ class JobPost(models.Model):
         on_delete=models.SET_NULL,
         related_name='compensation',
         null=True,
-        blank=True
+        blank=True,
+        db_column='compensation_id'
     )
 
 

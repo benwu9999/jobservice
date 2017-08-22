@@ -11,7 +11,7 @@ def index(request):
 
 
 from rest_framework import generics, status
-from models import JobPost, Compensation
+from models import JobPost
 from rest_framework.response import Response
 from rest_framework.views import APIView
 import json
