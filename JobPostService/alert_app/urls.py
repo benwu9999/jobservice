@@ -5,9 +5,9 @@ from . import views
 urlpatterns = [
     url(r'^$', views.index, name='index'),
 
-    url(r'^alert/$', views.ApplicationList.as_view()),
-    url(r'^alert/(?P<alertConfigId>.+)$', views.ApplicationDetail.as_view()),
-    url(r'^alert?userId=', views.ApplicationByUserId.as_view()),
+    url(r'^alert/$', views.AlertConfigList.as_view()),
+    url(r'^alert/(?P<alertConfigId>.+)$', views.AlertConfigDetail.as_view()),
+    url(r'^alert?userId=', views.AlertConfigByUserId.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from JobPostService.alert_app.models import AlertConfig
+from alert_app.models import AlertConfig
 
 
 class AlertConfigSerializer(serializers.ModelSerializer):

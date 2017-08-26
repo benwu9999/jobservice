@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',  # for allowing CORS
     'job_post_app.apps.JobPostServiceConfig',
+    'alert_app.apps.AlertServiceConfig',
+    'application_app.apps.ApplicationServiceConfig'
 ]
 
 MIDDLEWARE = [

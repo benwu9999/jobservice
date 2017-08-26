@@ -7,9 +7,10 @@ urlpatterns = [
 
     url(r'^jobPost/compensations$', views.CompensationList.as_view()),
     url(r'^jobPost/allIds$', views.AllIdsList.as_view()),
+    url(r'^jobPost/search?', views.JobPostSearch.as_view()),
 
     # need the '/' before $ to properly route call to generics.ListCreateAPIView
-    url(r'^jobPost$', views.JobPostList.as_view()),
+    url(r'^jobPost', views.JobPostList.as_view()),
 
     # supports /jobPost/{jobPostId}
     url(r'^jobPost/(?P<jobPostId>.+)$', views.JobPostDetail.as_view()),

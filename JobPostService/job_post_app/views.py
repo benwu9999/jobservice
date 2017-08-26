@@ -1,6 +1,7 @@
 # Create your views here.
 import logging
 
+import sys
 from django.http import HttpResponse
 
 from serializers import JobPostSerializer
@@ -42,7 +43,7 @@ class JobPostList(generics.ListCreateAPIView):
     def get(self, request, *args, **kwargs):
         if 'by' in request.data:
             profile_ids = request.data.pop('by').split(',')
-            return JobPost.objects.filter(employer_profile_id__in = profile_ids)
+            return JobPost.objects.filter(employer_profile_id__in=profile_ids)
         else:
             return self.list(request, *args, **kwargs)
 
@@ -58,11 +59,27 @@ class JobPostList(generics.ListCreateAPIView):
         else:
             return Response(job_post.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class JobPostDetail(generics.RetrieveUpdateDestroyAPIView):
     # override the default lookup field "PK" with the lookup field for this model
     lookup_field = 'jobPostId'
     queryset = JobPost.objects.all()
     serializer_class = JobPostSerializer
+
+
+class JobPostSearch(APIView):
+    def get(self, request, format=None):
+        try:
+            if 'by' in request.query_params:
+                serializer = JobPostSerializer(JobPost.objects.filter(
+                    pk__in=request.query_params['by'].split(',')), many=True)
+                ret = {
+                    'job_posts' : serializer.data,
+                    'total_job_post_count' : len(serializer.data)
+                }
+                return Response(ret)
+        except:
+            return Response(sys.exc_info()[0])
 
 
 class JobPostBulkSave(APIView):

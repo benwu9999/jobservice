@@ -5,6 +5,9 @@ import uuid
 # fields in model will use camel case so django can parse json which is also camel case
 
 # Create your models here.
+from django_unixdatetimefield import UnixDateTimeField
+
+
 class Compensation(models.Model):
     """
     data model for compensation information
@@ -17,6 +20,7 @@ class Compensation(models.Model):
     compensation_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     amount = models.IntegerField(default=0, null=True)
     duration = models.CharField(max_length=200, null=True)
+    created = UnixDateTimeField(null=True, blank=True)
 
 
 class JobPost(models.Model):
@@ -32,7 +36,6 @@ class JobPost(models.Model):
     description = models.CharField(max_length=200, null=True)
     employer_profile_id = models.CharField(max_length=200, null=True)
     location_id = models.CharField(max_length=200, null=True)
-    at = models.DateTimeField(auto_now=True, null=True)
     compensation = models.ForeignKey(
         Compensation,
         on_delete=models.SET_NULL,
@@ -41,6 +44,8 @@ class JobPost(models.Model):
         blank=True,
         db_column='compensation_id'
     )
+    created = UnixDateTimeField(null=True, blank=True)
+    modified = UnixDateTimeField(auto_now=True)
 
 
 class Query(models.Model):
@@ -53,13 +58,13 @@ class Query(models.Model):
     employer_names = models.CharField(max_length=200)  # string []
     compensation = models.CharField(max_length=200)  # number []
     compensation_unit = models.CharField(max_length=20)
-    commute_time = models.IntegerField(max_length=200)  # in minutes, i.e 60 = 60 minutes
+    commute_time = models.IntegerField()  # in minutes, i.e 60 = 60 minutes
     commute_options = models.CharField(max_length=200)  # comma delimited list of option, i.e. transit,driving
     frequency = models.CharField(max_length=20)  # daily, bi-daily, weekly, monthly
     location_ids = models.CharField(max_length=200)  # string []
-    updated = models.DateField()
     has_contact = models.BooleanField()
-
+    created = UnixDateTimeField(null=True, blank=True)
+    modified = UnixDateTimeField(auto_now=True)
 
 from django.db.models.fields import Field
 

@@ -3,9 +3,6 @@ import logging
 
 from django.http import HttpResponse
 
-from serializers import JobPostSerializer
-
-
 def index(request):
     return HttpResponse("application service api")
 
