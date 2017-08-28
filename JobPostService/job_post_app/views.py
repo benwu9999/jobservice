@@ -2,9 +2,11 @@
 import logging
 
 import sys
+import time
 from django.http import HttpResponse
 
 from serializers import JobPostSerializer
+from django.db.models import Q
 
 
 def index(request):
@@ -70,16 +72,30 @@ class JobPostDetail(generics.RetrieveUpdateDestroyAPIView):
 class JobPostSearch(APIView):
     def get(self, request, format=None):
         try:
-            if 'by' in request.query_params:
-                serializer = JobPostSerializer(JobPost.objects.filter(
-                    pk__in=request.query_params['by'].split(',')), many=True)
-                ret = {
-                    'job_posts' : serializer.data,
-                    'total_job_post_count' : len(serializer.data)
-                }
-                return Response(ret)
+            args = Q()
+            kwargs = {}
+            if 'employer_profile_id' in request.query_params:
+                kwargs['employer_profile_id__in'] = request.query_params['employer_profile_id'].split(',')
+            if 'location_id' in request.query_params:
+                kwargs['location_id__in'] = request.query_params['location_id'].split(',')
+            if 'job_post_id' in request.query_params:
+                kwargs['pk__in'] = request.query_params['job_post_id'].split(',')
+            if 'within' in request.query_params:
+                kwargs['created__gt'] = self.get_epoch(request.query_params['within'])
+            if 'has' in request.query_params:
+                args = args | Q(**{'title__icontains':request.query_params['has']})
+                args = args | Q(**{'description__icontains': request.query_params['has']})
+            z = JobPostSerializer(JobPost.objects.filter(*args, **kwargs), many=True)
+            ret = {
+                'job_posts': z.data,
+                'total_job_post_count': len(z.data)
+            }
+            return Response(ret)
         except:
             return Response(sys.exc_info()[0])
+
+    def get_epoch(self, epoch):
+        return int(time.time()) - epoch
 
 
 class JobPostBulkSave(APIView):
