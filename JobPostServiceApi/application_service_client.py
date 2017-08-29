@@ -2,10 +2,10 @@ import json
 import urllib2
 import os
 
-class JobPostServiceClient:
+class ApplicationServiceClient:
 
-    DEFAULT_URL = os.getenv('JOB_POST_SVC_URL', 'http://127.0.0.1:8011/jobPost/');
-    
+    DEFAULT_URL = os.getenv('APPLICATION_SVC_URL', 'http://127.0.0.1:8011/application/');
+
     def __init__(self, url):
         if url:
             self.url = url
@@ -19,7 +19,7 @@ class JobPostServiceClient:
         return parsed
 
 if __name__ == '__main__':
-    client = JobPostServiceClient();
+    client = ApplicationServiceClient();
     test_ids = ['fb876c21-1da3-48c4-8761-ced53509f37d']
     obj = client.get(test_ids)
     print(json.dumps(obj))

@@ -15,8 +15,7 @@
 #         parser.add_argument('job_post_service_url', nargs='+', type=str)
 #
 #     def handle(self, *args, **options):
-# #         if 'poll_id' in options:
-# #         else:
+
 #         url = options['user_service_url']
 #         user_client = UserServiceClient(url);
 #
