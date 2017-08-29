@@ -3,6 +3,8 @@ import logging
 
 import sys
 import time
+
+import operator
 from django.http import HttpResponse
 
 from serializers import JobPostSerializer
@@ -10,7 +12,7 @@ from django.db.models import Q
 
 
 def index(request):
-    return HttpResponse("Hello World! This is our Test App.")
+    return HttpResponse("job post service api")
 
 
 from rest_framework import generics, status
@@ -72,20 +74,21 @@ class JobPostDetail(generics.RetrieveUpdateDestroyAPIView):
 class JobPostSearch(APIView):
     def get(self, request, format=None):
         try:
-            args = Q()
-            kwargs = {}
-            if 'employer_profile_id' in request.query_params:
-                kwargs['employer_profile_id__in'] = request.query_params['employer_profile_id'].split(',')
-            if 'location_id' in request.query_params:
-                kwargs['location_id__in'] = request.query_params['location_id'].split(',')
-            if 'job_post_id' in request.query_params:
-                kwargs['pk__in'] = request.query_params['job_post_id'].split(',')
+            qs = list()
+            if 'employerProfileIds' in request.query_params:
+                qs.append(Q(employer_profile_id__in=request.query_params['employerProfileIds'].split(',')))
+            if 'locationIds' in request.query_params:
+                qs.append(Q(location_id__in=request.query_params['locationIds'].split(',')))
+            if 'ids' in request.query_params:
+                qs.append(Q(pk__in=request.query_params['ids'].split(',')))
             if 'within' in request.query_params:
-                kwargs['created__gt'] = self.get_epoch(request.query_params['within'])
+                qs.append(Q(created__gt=self.get_epoch(request.query_params['within'])))
             if 'has' in request.query_params:
-                args = args | Q(**{'title__icontains':request.query_params['has']})
-                args = args | Q(**{'description__icontains': request.query_params['has']})
-            z = JobPostSerializer(JobPost.objects.filter(*args, **kwargs), many=True)
+                text_qs = list()
+                text_qs.append(Q(**{'title__icontains': request.query_params['has']}))
+                text_qs.append(Q(**{'description__icontains': request.query_params['has']}))
+                qs.append(reduce(operator.or_, text_qs))
+            z = JobPostSerializer(JobPost.objects.filter(reduce(operator.and_, qs)), many=True)
             ret = {
                 'job_posts': z.data,
                 'total_job_post_count': len(z.data)
