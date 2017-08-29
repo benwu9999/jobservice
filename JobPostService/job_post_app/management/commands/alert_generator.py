@@ -1,21 +1,27 @@
-# from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand, CommandError
 # from JobPostService.job_post_app.models import Query
 # import json
 #
-# class Command(BaseCommand):
-#     help = 'generate alerts'
+
+# run custom admin command like this:
+# cd ~/job-post-service/JobPostService && python manage.py generate_alert
+class Command(BaseCommand):
+    help = 'generate alerts'
 #
 #     user_emails = {}
 #     employer_ids = {}
 #     location_ids = {}
 #     commute_client = None
 #
-#     def add_arguments(self, parser):
-#         parser.add_argument('user_id', nargs='+', type=str)
-#         parser.add_argument('job_post_service_url', nargs='+', type=str)
-#
-#     def handle(self, *args, **options):
+    def add_arguments(self, parser):
+#        parser.add_argument('user_id', nargs='+', type=str)
+#        parser.add_argument('job_post_service_url', nargs='+', type=str)
+        pass
 
+    def handle(self, *args, **options):
+        print "hello world"
+        self.stdout.write("Hello")
+        
 #         url = options['user_service_url']
 #         user_client = UserServiceClient(url);
 #
