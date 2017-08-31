@@ -1,3 +1,5 @@
+import json
+
 from django.core.management.base import BaseCommand, CommandError
 
 
@@ -16,160 +18,161 @@ class Command(BaseCommand):
     #     location_ids = {}
     #     commute_client = None
     #
+    commute_cache = dict();
+    user_client = None;
+    provider_client = None;
+    location_client = None;
+    commute_client = None;
+
+    def add_arguments(self, parser):
+        parser.add_argument('user_id', nargs='+', type=str)
+        parser.add_argument('job_post_service_url', nargs='+', type=str)
+        parser.add_argument('provider_profile_service_url', nargs='+', type=str)
+        parser.add_argument('location_service_url', nargs='+', type=str)
+        parser.add_argument('commute_service_url', nargs='+', type=str)
+        pass
 
 
-def add_arguments(self, parser):
-    parser.add_argument('user_id', nargs='+', type=str)
-    parser.add_argument('job_post_service_url', nargs='+', type=str)
-    parser.add_argument('provider_profile_service_url', nargs='+', type=str)
-    parser.add_argument('location_service_url', nargs='+', type=str)
-    parser.add_argument('commute_service_url', nargs='+', type=str)
-    pass
+    def handle(self, *args, **options):
+        print "hello world"
+        self.stdout.write("Hello")
 
+        url = options['user_service_url']
+        self.user_client = UserServiceClient(url);
 
-def handle(self, *args, **options):
-    print "hello world"
-    self.stdout.write("Hello")
+        url = options['provider_profile_service_url']
+        self.provider_client = ProviderProfileClient(url)
 
-    url = options['user_service_url']
-    user_client = UserServiceClient(url);
+        url = options['location_service_url']
+        self.location_client = LocationClient(url)
 
-    url = options['provider_profile_service_url']
-    provider_client = ProviderProfileClient(url)
+        url = options['commute_service_url']
+        self.commute_client = CommuteClient(url)
 
-    url = options['location_service_url']
-    location_client = LocationClient(url)
+        queries = self.get_query()
+        user_ids = frozenset([q.user_id for q in queries])
+        users = self.user_client.get(user_ids)
+        users_dict = dict()
+        for u in users:
+            users_dict[u.id] = u.email
 
-    url = options['commute_service_url']
-    commute_client = CommuteClient(url)
+        employer_names = set()
+        for q in queries:
+            employer_names.update(q.employer_names)
+        kwargs = dict()
+        kwargs['name'] = employer_names
+        employers_by_name_dict = self.provider_client.search_by_name(**kwargs)
 
-    queries = self.get_query()
-    user_ids = frozenset([q.user_id for q in queries])
-    users = user_client.get(user_ids)
-    users_dict = dict()
-    for u in users:
-        users_dict[u.id] = u.email
+        location_names = set()
+        for q in queries:
+            location_names.update(q.locations)
+        kwargs = dict()
+        kwargs['name'] = location_names
+        location_by_name_dict = self.location_client.search_by_name(**kwargs)
 
-    employer_names = set()
-    for q in queries:
-        employer_names.update(q.employer_names)
-    kwargs = dict()
-    kwargs['name'] = employer_names
-    employers = provider_client.search(**kwargs)
-    employers_dict = dict()
-    for e in employers:
-        if e.name not in employers_dict:
-            employers_dict[e.name] = []
-            employers_dict[e.name].append(e.id)
+        results = []
+        for query in queries:
+            matches = self.generate_match(query, employers_by_name_dict, location_by_name_dict)
+            email = users_dict[query.user_id]
+            results.append((email, query, matches))
+        self.process(results)
 
-    location_names = set()
-    for q in queries:
-        location_names.update(q.locations)
-    kwargs = dict()
-    kwargs['name'] = location_names
-    locations = provider_client.search(**kwargs)
-    location_by_name_dict = dict()
-    for l in locations:
-        if l.name not in location_by_name_dict:
-            location_by_name_dict[l.name] = []
-        location_by_name_dict[l.name].append(l.id)
-
-
-    results = []
-    for query in queries:
-        matches = self.generate_match(query)
-        email = users_dict[query.user_id]
-        results.append((email, query, matches))
-    self.process(results)
-
-    def generate_match(self, query):
-        query_dict = self.convert_to_dict(query)
+    def generate_match(self, query, employers_by_name_dict, location_by_name_dict):
+        query_dict = self.convert_to_dict(query, employers_by_name_dict, location_by_name_dict)
         matches = JobPost.objects.fiter(**query_dict)
         if query.commute and query.commute_unit:
             # query.commute, query.commute_time, query.commute_option
             self.filter_job_posts_with_commute(matches, query)
         return matches
 
-
-def convert_to_dict(self, query):
-    keywords = json.loads(query.keywords)
-    if keywords:
-        # custom lookup
-        d['title,description__search'] = keywords[0].join(' +')
-        # full text search of keywords,
-        # i.e. MATCH (title,description) AGAINST (k1 +k2 +3 IN BOOLEAN MODE)
-        # match k1 k2 AND k3
-    employer_names = json.loads(query.keywords)
-    if employer_names:
-        # custom lookup
-        employer_ids = self.get_employer_ids(employer_names)
-        d['employer_profile_id__search'] = employer_ids.join(' ')
-        # i.e. MATCH (employer_profile_id) AGAINST (e1 e2 e3 IN BOOLEAN MODE)
-        # match either e1 e2 OR e3
-    if query.locations:
-        # custom lookup
-        location_ids = self.get_location_ids(query.locations)
-        d['location_id__contains'] = location_ids.join(' ')
-    if query.compensation and query.compensation_unit:
-        d['compensation_amount__range'] = (query.compensation[0], query.compensation[1])
-        d['compensation_duration'] = query.compensation_unit
-    if query.updated:
-        d['updated__gt'] = query.updated
-    if query.has_contact != None:
-        d['has_contact'] = query.has_contact
-    return d
-
-
-def filter_job_posts_with_commute(self, job_posts, query):
-    filtered_job_posts = []
-    location_pairs_to_query = []
-    commute_svc_query_job_posts = []
-    for job_post in job_posts:
-        cache_key = query.location_ids[0] + '-' + job_post.location_id
-        if cache_key in commute_cache and self.commute_less(query, commute_cache[cache_key]):
-            filtered_job_posts.append(job_post)
-        else:
-            location_pairs_to_query.append((query.location_ids[0], job_post.location_id))
-            commute_svc_query_job_posts.append(job_post)
-    d = commute_client.query(location_pairs_to_query)
-    for job_post in commute_svc_query_job_posts:
-        key = query.location_ids[0] + '-' + job_post.location_id
-        commute_cache[key] = d[key]
-        if key in d and self.commute_less(query, d[key]):
-            filtered_job_posts.append(job_post)
-    return filtered_job_posts
+    def convert_to_dict(self, query, employers_by_name_dict, location_by_name_dict):
+        d = dict()
+        keywords = query.keywords
+        if keywords:
+            # custom lookup
+            d['title,description__search'] = ' +'.join(keywords)
+            # full text search of keywords,
+            # i.e. MATCH (title,description) AGAINST (k1 +k2 +3 IN BOOLEAN MODE)
+            # match k1 k2 AND k3
+        employer_names = query.employer_names
+        if employer_names:
+            # custom lookup
+            employer_ids = self.get_employer_ids(employer_names, employers_by_name_dict)
+            d['employer_profile_id__search'] = ','.join(employer_ids)
+            # i.e. MATCH (employer_profile_id) AGAINST (e1 e2 e3 IN BOOLEAN MODE)
+            # match either e1 e2 OR e3
+        if query.locations:
+            # custom lookup
+            location_ids = self.get_location_ids(query.locations, location_by_name_dict)
+            d['location_id__contains'] = ','.join(location_ids)
+            query.location_ids = location_ids
+        if query.compensation and query.compensation_unit:
+            d['compensation_amount__range'] = (query.compensation[0], query.compensation[1])
+            d['compensation_duration'] = query.compensation_unit
+        if query.updated:
+            d['modified__gt'] = query.updated
+        if query.has_contact != None:
+            d['has_contact'] = query.has_contact
+        return d
 
 
-def commute_less(self, query, commute_info):
-    if query.commute_options.contains('transit') and commute_info.transit_time < query.commute_info.transit_time
-        return True
-    if query.commute_options.contains('drive') and commute_info.drive_time < query.commute_info.drive_time
-        return True
-    return False
+    def filter_job_posts_with_commute(self, job_posts, query):
+        filtered_job_posts = []
+        location_pairs_to_query = []
+        job_posts_by_location_id = dict()
+        for job_post in job_posts:
+            # list of location ids of the user
+            for location_id in query.commute_location_ids:
+                key = query.location_id + '-' + job_post.location_id
+                # if commute already in cache, compared the cached value
+                if key in self.commute_cache and self.commute_less(query, self.commute_cache[key]):
+                    filtered_job_posts.append(job_post)
+                # else query commute service and create map of
+                # [location id of job posts -> list of job posts associated with the location id]
+                else:
+                    location_pairs_to_query.append((location_id, job_post.location_id))
+                    if job_post.location_id not in job_posts_by_location_id:
+                        job_posts_by_location_id[job_post.location_id] = []
+                    job_posts_by_location_id[job_post.location_id].append(job_post)
+        d = self.commute_client.query(location_pairs_to_query)
+        for key in d:
+            commute = d[key]
+            if self.commute_less(query, commute):
+                job_posts = job_posts_by_location_id[key.split('-')[1]]
+                filtered_job_posts.extend(job_posts)
+        return filtered_job_posts
 
 
-def get_employer_ids(self, employer_names):
-    r = []
-    for n in employer_names:
-        r.extend(employer_ids[n])
-    return r
+    def commute_less(self, query, commute_info):
+        if query.commute_options.contains('transit') and commute_info.transit_time < query.commute_info.transit_time:
+            return True
+        if query.commute_options.contains('drive') and commute_info.drive_time < query.commute_info.drive_time:
+            return True
+        return False
 
 
-def get_location_ids(self, locations):
-    r = []
-    for n in locations:
-        r.extend(location_ids[n])
-    return r
+    def get_employer_ids(self, employer_names, employers_by_name_dict):
+        r = []
+        for n in employer_names:
+            r.extend(employers_by_name_dict[n])
+        return r
 
 
-def process(self, results):
-    email_client = EmailClient()
-    email_client.send(results)  # 3)
-    # save(results)
+    def get_location_ids(self, locations, location_by_name_dict):
+        r = []
+        for n in locations:
+            r.extend(location_by_name_dict[n])
+        return r
 
 
-def get_query(self):
-    return Query.objects.fiter(active=True)
+    def process(self, results):
+        email_client = EmailClient()
+        email_client.send(results)  # 3)
+        # save(results)
+
+
+    def get_query(self):
+        return Query.objects.fiter(active=True)
 
 
 class EmailClient:
@@ -177,8 +180,7 @@ class EmailClient:
         self.template_engine = TemplateEngine()
         self.api = "https://api.mailgun.net/v3/YOUR_DOMAIN_NAME/messages"
         self.auth = ("api", "YOUR_API_KEY")
-        self.
-        from = "admin@oneseek.com"
+        self.from_email = "admin@oneseek.com"
 
     def send(self, results):
         for r in results:
@@ -187,10 +189,4 @@ class EmailClient:
             matches = r[2]
             msg = self.template_engine.render(matches)
             subject = self.template_engine.subject();
-            requests.post(self.api, self.auth,
-                          data={"from": self.
-            from,
-            "to": [email],
-                  "subject": subject,
-                             "text": msg,
-            })
+            requests.post(self.api, self.auth, data={"from": self.from_email, "to": [email], "subject": subject, "text": msg})
