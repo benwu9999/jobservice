@@ -20,7 +20,8 @@ class JobPostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = JobPost
-        fields = ('jobPostId', 'title', 'description', 'employerProfileId', 'locationId', 'compensation', 'at')
+        # fields = ('jobPostId', 'title', 'description', 'employerProfileId', 'locationId', 'compensation', 'at')
+        fields = '__all__'
 
     def create(self, validated_data):
         compensation_data = validated_data.pop('compensation')

@@ -46,6 +46,8 @@ class JobPost(models.Model):
     )
     created = UnixDateTimeField(null=True, blank=True)
     modified = UnixDateTimeField(auto_now=True)
+    hide_contact = models.BooleanField(default=True)
+    hide_location = models.BooleanField(default=True)
 
 
 class Query(models.Model):

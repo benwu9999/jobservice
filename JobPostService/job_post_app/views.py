@@ -9,6 +9,7 @@ from django.http import HttpResponse
 
 from serializers import JobPostSerializer
 from django.db.models import Q
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 def index(request):
@@ -72,6 +73,8 @@ class JobPostDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class JobPostSearch(APIView):
+    ENTRY_PER_PAGE = 50
+
     def get(self, request, format=None):
         try:
             qs = list()
@@ -88,10 +91,26 @@ class JobPostSearch(APIView):
                 text_qs.append(Q(**{'title__icontains': request.query_params['has']}))
                 text_qs.append(Q(**{'description__icontains': request.query_params['has']}))
                 qs.append(reduce(operator.or_, text_qs))
-            z = JobPostSerializer(JobPost.objects.filter(reduce(operator.and_, qs)), many=True)
+
+            if qs:
+                job_posts = JobPost.objects.filter(reduce(operator.and_, qs))
+            else:
+                job_posts = JobPost.objects.all()
+            if 'page' in request.query_params:
+                try:
+                    page = int(request.query_params['page'])
+                    paginator = Paginator(job_posts, JobPostSearch.ENTRY_PER_PAGE)
+                    job_posts = paginator.page(page)
+                except PageNotAnInteger:
+                    # If page is not an integer, deliver first page.
+                    job_posts = paginator.page(1)
+                except EmptyPage:
+                    # If page is out of range (e.g. 9999), return empty list
+                    job_posts = []
+            z = JobPostSerializer(job_posts, many=True)
             ret = {
                 'job_posts': z.data,
-                'total_job_post_count': len(z.data)
+                'total_job_post_count': paginator.count
             }
             return Response(ret)
         except:
