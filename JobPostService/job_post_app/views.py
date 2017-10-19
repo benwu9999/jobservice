@@ -5,6 +5,8 @@ import sys
 import time
 
 import operator
+
+from datetime import datetime
 from django.http import HttpResponse
 
 from serializers import JobPostSerializer
@@ -17,7 +19,7 @@ def index(request):
 
 
 from rest_framework import generics, status
-from models import JobPost
+from models import JobPost, Compensation
 from rest_framework.response import Response
 from rest_framework.views import APIView
 import json
@@ -52,31 +54,36 @@ class JobPostList(generics.ListCreateAPIView):
         else:
             return self.list(request, *args, **kwargs)
 
-    def create(self, request, *args, **kwargs):
-        job_post_data = request.data.pop('jobPost')
-        job_post_data['employerProfileId'] = job_post_data['employerProfile']['profileId']
-        job_post_data['locationId'] = job_post_data['location']['locationId']
-        # request.data has user info, not using it for now
-        job_post = JobPostSerializer(data=job_post_data)
-        if job_post.is_valid():
-            job_post.save()  # will call .create()
-            return Response(job_post.data, status=status.HTTP_201_CREATED)
+    def post(self, request, *args, **kwargs):
+        job_post_data = request.data.pop('job_post')
+        job_post_data['employer_profile_id'] = job_post_data.pop('employer_profile')['profile_id']
+        job_post_data['location_id'] = job_post_data.pop('location')['location_id']
+        if 'job_post_id' not in job_post_data:
+            job_post_data['created'] = datetime.utcnow()
+            okStatus = status.HTTP_201_CREATED
         else:
-            return Response(job_post.errors, status=status.HTTP_400_BAD_REQUEST)
+            okStatus = status.HTTP_200_OK
+
+        compensation = Compensation(**job_post_data['compensation'])
+        compensation.save()
+
+        job_post_data['compensation'] = compensation
+
+        jobPost = JobPost(**job_post_data)
+        jobPost.save()
+
+        return Response(JobPostSerializer(jobPost).data, status=okStatus)
 
 
 class JobPostDetail(generics.RetrieveUpdateDestroyAPIView):
-    # override the default lookup field "PK" with the lookup field for this model
-    lookup_field = 'jobPostId'
     queryset = JobPost.objects.all()
     serializer_class = JobPostSerializer
 
 
 class JobPostSearch(APIView):
-    ENTRY_PER_PAGE = 50
-
     def get(self, request, format=None):
         try:
+            page_size = request.query_params['pageSize']
             qs = list()
             if 'employerProfileIds' in request.query_params:
                 qs.append(Q(employer_profile_id__in=request.query_params['employerProfileIds'].split(',')))
@@ -99,7 +106,7 @@ class JobPostSearch(APIView):
             if 'page' in request.query_params:
                 try:
                     page = int(request.query_params['page'])
-                    paginator = Paginator(job_posts, JobPostSearch.ENTRY_PER_PAGE)
+                    paginator = Paginator(job_posts, page_size)
                     job_posts = paginator.page(page)
                 except PageNotAnInteger:
                     # If page is not an integer, deliver first page.
@@ -110,7 +117,7 @@ class JobPostSearch(APIView):
             z = JobPostSerializer(job_posts, many=True)
             ret = {
                 'job_posts': z.data,
-                'total_job_post_count': paginator.count
+                'job_post_count_for_search': paginator.count
             }
             return Response(ret)
         except:

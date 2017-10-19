@@ -1,4 +1,6 @@
 from __future__ import unicode_literals
+
+from datetime import datetime
 from django.db import models
 import uuid
 
@@ -44,7 +46,7 @@ class JobPost(models.Model):
         blank=True,
         db_column='compensation_id'
     )
-    created = UnixDateTimeField(null=True, blank=True)
+    created = UnixDateTimeField(default=datetime.utcnow)
     modified = UnixDateTimeField(auto_now=True)
     hide_contact = models.BooleanField(default=True)
     hide_location = models.BooleanField(default=True)
