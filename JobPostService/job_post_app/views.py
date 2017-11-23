@@ -59,7 +59,6 @@ class JobPostList(generics.ListCreateAPIView):
         job_post_data['employer_profile_id'] = job_post_data.pop('employer_profile')['profile_id']
         job_post_data['location_id'] = job_post_data.pop('location')['location_id']
         if 'job_post_id' not in job_post_data:
-            job_post_data['created'] = datetime.utcnow()
             okStatus = status.HTTP_201_CREATED
         else:
             okStatus = status.HTTP_200_OK

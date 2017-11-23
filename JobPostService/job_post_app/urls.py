@@ -14,6 +14,7 @@ urlpatterns = [
 
     # supports /jobPost/{jobPostId}
     url(r'^jobPost/(?P<pk>.+)$', views.JobPostDetail.as_view()),
+
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
