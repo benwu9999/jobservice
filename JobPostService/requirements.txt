@@ -1,6 +1,7 @@
 #
 #Ensure pip and setuptools are up to date before install packages below!!
 #
+--extra-index-url http://35.193.192.45:8090/simple/
 appdirs==1.4.3
 coreapi==2.3.0
 coreschema==0.0.4
@@ -20,3 +21,5 @@ requests==2.13.0
 six==1.10.0
 uritemplate==3.0.0
 django-cors-headers==2.0.2
+user-service-api==1.28
+location-service-api==1.13

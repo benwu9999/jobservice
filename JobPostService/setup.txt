@@ -17,6 +17,10 @@ install MYSQL dependency (probably a "native" lib)
  c) when creating database for this project, use character set UTF8 to support Chinese characters:
     i.e., if the database job_post already exists, to set it to use UTF8 character set, run this command in mysql client:
     ALTER DATABASE job_post CHARACTER SET utf8 COLLATE utf8_general_ci;
+ d) add binary fulltext index to job post table
+    ALTER TABLE job_post.job_post ADD FULLTEXT INDEX FullTextIdx (title ASC,  description ASC) with PARSER ngram;
+    test the fulltext index added:
+    SELECT * FROM job_post.job_post WHERE MATCH (title,description) AGAINST ('search_term_1 +search_term_2' IN BOOLEAN MODE);
 sudo apt-get install libmysqlclient-dev
 3. In pycharm python integration tools, point pycharm to look at
 requirements.txt
@@ -30,3 +34,8 @@ sample compensation json string for "http://localhost:8000/docs/"
     "amount": 1,
     "duration": "day"
 }
+
+
+how to add message to jinja template
+1. add new message in po files
+2. create mo file using msgfmt, i.e. command is "msgfmt po_file", i.e: msgfmt messages.po

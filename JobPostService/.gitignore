@@ -1,5 +1,0 @@
-*.pyc
-lib/*
-alert_app/migrations/*
-job_post_app/migrations/*
-application_app/migrations/*

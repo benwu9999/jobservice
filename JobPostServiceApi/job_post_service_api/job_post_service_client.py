@@ -10,7 +10,7 @@ class JobPostServiceClient:
         if url:
             self.url = url
         else:
-            self.url = DEFAULT_URL
+            self.url = JobPostServiceClient.DEFAULT_URL
 
     def get(self, ids):
         if not ids:

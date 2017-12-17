@@ -1,18 +1,31 @@
 from __future__ import unicode_literals
-from django.db import models
-import uuid
-from django_unixdatetimefield import UnixDateTimeField
-import datetime
-import dateutil.parser
 
+import datetime
+import uuid
+
+import dateutil.parser
+import pytz
+from django.db import models
+from django.utils.timezone import make_aware
+from django_unixdatetimefield import UnixDateTimeField
+
+from admin_site.settings import TIME_ZONE
 from job_post_app.models import Compensation
 
+TIME_ZONE = pytz.timezone(TIME_ZONE)
 
 class Query(models.Model):
+    """
+    location_id - the active location id of the user when this query is created
+    profile_id - the active profile id of the user when this query is created
+    commute - commute time in minutes
+    """
     query_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     terms = models.CharField(max_length=400)
     employer_names = models.CharField(max_length=400)
-    commute_hour = models.DecimalField(max_digits=5, decimal_places=2, null=True)
+    commute = models.IntegerField(null=True)
+    location_id = models.UUIDField(primary_key=False, default=uuid.uuid4, editable=False)
+    profile_id = models.UUIDField(primary_key=False, default=uuid.uuid4, editable=False)
     locations = models.CharField(max_length=400)
     shows_contact = models.BooleanField()
     min_comp = models.ForeignKey(
@@ -38,8 +51,11 @@ class Query(models.Model):
             self.created = datetime.datetime.now()
         elif type(self.created) is str:
             self.created = dateutil.parser.parse(self.created)
-        self.last_updated = dateutil.parser.parse(self.last_updated)
+        self.last_updated = make_aware(dateutil.parser.parse(self.last_updated), is_dst=True)
         super(Query, self).save()
+
+    def last_updated_w_tz(self):
+        return TIME_ZONE.localize(self.last_updated)
 
 
 class Alert(models.Model):

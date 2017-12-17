@@ -1,0 +1,98 @@
+<mjml>
+    <mj-head>
+        <mj-style>
+            .btn {width: 100%; background-color: #3498db; border-radius: 3px; box-sizing: border-box; color: #ffffff;
+            cursor: pointer; display: inline-block; font-size: 1em; font-weight: bold; text-transform: capitalize;
+            padding: 0em 1em 0em 1em;}
+        </mj-style>
+
+    </mj-head>
+    <mj-body>
+        <mj-container>
+            <mj-navbar background-color="#ef6452">
+                <mj-column width="80%">
+                    <mj-image align="left" width="150px" src="https://mjml.io/assets/img/logo-white-small.png"
+                              href="/components"></mj-image>
+                </mj-column>
+                <mj-column width="20%">
+                    <mj-inline-links base-url="https://mjml.io" hamburger="hamburger" ico-color="#ffffff">
+                        <mj-link href="/components" color="#ffffff">{{ _("header_homepage") }}</mj-link>
+                        <mj-link href="/components" color="#ffffff">{{ _("header_login") }}</mj-link>
+                    </mj-inline-links>
+                </mj-column>
+            </mj-navbar>
+
+            <mj-section>
+                <mj-column>
+                    <mj-text>{{ _("open_job_post_greeting") }}</mj-text>
+                    <mj-spacer/>
+                    <mj-divider border-width="2px" border-style="solid" border-color="lightgrey"/>
+                </mj-column>
+            </mj-section>
+
+
+            <!-- Body -->
+            <mj-section>
+                <mj-column>
+                    <mj-table>
+                        <tr style="border-bottom:1px solid #ecedee;text-align:left;padding:15px 0;">
+                            <th style="padding: 0 15px 0 0;">{{ _("address") }}</th>
+                            <th style="padding: 0 15px;">{{ _("job_post_description") }}</th>
+                            <th style="padding: 0 0 0 15px;">{{ _("commute") }}</th>
+                            <th style="padding: 0 0 0 15px;">{{ _("created_time") }}</th>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0 0 1em 0;"></td>
+                        </tr>
+
+                        {% for job_post in job_posts %}
+                        <tr {{ loop.cycle(
+                        'style="background: whitesmoke;"', '') }} >
+                        <td nowrap style="padding: 0 15px 0 0;">
+                            {{ job_post.location|e }}
+                            <a href="{{ job_post.location_link|e }}">{{ _("details") }}</a>
+                        </td>
+                        <td style="font-size:1em;">
+                            {{ job_post.description|e }}
+                            <a href="link">{{ _("details") }}</a>
+                        </td>
+                        <td style="font-size:1em;">
+                            drive: {{ job_post.transit_commute|e }}
+                            <br>
+                            transit: {{ job_post.drive_commute|e }}
+                        </td>
+                        <td nowrap style="padding: 0 0 0 15px; font-size:1em;">
+                            {{ job_post.created_time|e }}
+                        </td>
+                        </tr>
+                        {% endfor %}
+
+                    </mj-table>
+
+                </mj-column>
+            </mj-section>
+
+            <mj-section>
+                <mj-column>
+                    <mj-social mode="vertical" facebook-href="My facebook page" google-href="My google+ page"/>
+                    <mj-divider border-width="2px" border-style="solid" border-color="lightgrey"/>
+                </mj-column>
+            </mj-section>
+
+
+            <mj-section>
+                <mj-column>
+                    <mj-text>
+                        <a href="https://mjml.io" style="color:silver">
+                            update preference
+                        </a>
+                        <a href="https://mjml.io" style="color:silver">
+                            unsubscribe
+                        </a>
+                    </mj-text>
+                </mj-column>
+            </mj-section>
+
+        </mj-container>
+    </mj-body>
+</mjml>
