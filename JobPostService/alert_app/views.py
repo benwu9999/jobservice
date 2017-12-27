@@ -10,7 +10,7 @@ def index(request):
 
 
 from rest_framework import generics, status
-from models import Alert, Query
+from models import Alert, Query, MONTHLY, WEEKLY, DAILY
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from serializers import AlertSerializer
@@ -62,7 +62,7 @@ class AlertSearchByIds(APIView):
 
 
 class AlertFreqList(APIView):
-    frequencies = ['Daily', 'Weekly', 'Monthly'];
+    frequencies = [DAILY, WEEKLY, MONTHLY];
 
     def get(self, request, format=None):
         return Response(AlertFreqList.frequencies)

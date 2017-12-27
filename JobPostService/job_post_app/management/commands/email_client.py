@@ -21,14 +21,14 @@ env.install_gettext_translations(i18n)
 
 
 class EmailClient:
-    def __init__(self):
-        pass
-
-    template = env.get_template('email_template.html')
-
+    template_url = 'email_template.html'
+    template = env.get_template(template_url)
     key = 'key-992449508ab9bedb746eb2b72af6e01f'
     sandbox = 'sandbox4ce17324a56c48e28aa83dcb313ed504.mailgun.org'
     MAX_BATCH_SIZE = 1000
+
+    def __init__(self):
+        pass
 
     def send(self, all_results):
         chunks = [all_results[x:x + self.MAX_BATCH_SIZE] for x in xrange(0, len(all_results), self.MAX_BATCH_SIZE)]

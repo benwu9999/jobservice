@@ -8,7 +8,11 @@ import operator
 
 from datetime import datetime
 from django.http import HttpResponse
+from location_service_api.location_service_client import LocationServiceClient
+from user_service_api.provider_profile_service_client import ProviderProfileServiceClient
 
+import utils
+from admin_site.settings import PROVIDER_PROFILE_SERVICE_URL, LOCATION_SERVICE_URL
 from serializers import JobPostSerializer
 from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -22,6 +26,8 @@ from rest_framework import generics, status
 from models import JobPost, Compensation
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from alert_app.models import Query
+from job_post_app.utils import generate_match
 import json
 
 logger = logging.getLogger(__name__)
@@ -40,6 +46,9 @@ logger = logging.getLogger(__name__)
 # def job_posts(**kwargs):
 #     rest_params = convert_to_rest_params(kwargs)
 #     self.job_posts
+
+provider_client = ProviderProfileServiceClient(PROVIDER_PROFILE_SERVICE_URL)
+location_client = LocationServiceClient(LOCATION_SERVICE_URL)
 
 # uncomment the line below if you want to enable csrf protection for this view
 # @method_decorator(csrf_protect, name='post')
@@ -82,29 +91,39 @@ class JobPostDetail(generics.RetrieveUpdateDestroyAPIView):
 class JobPostSearch(APIView):
     def get(self, request, format=None):
         try:
-            page_size = request.query_params['pageSize']
+            data = request.query_params
+            page_size = data['pageSize']
             qs = list()
-            if 'employerProfileIds' in request.query_params:
-                qs.append(Q(employer_profile_id__in=request.query_params['employerProfileIds'].split(',')))
-            if 'locationIds' in request.query_params:
-                qs.append(Q(location_id__in=request.query_params['locationIds'].split(',')))
-            if 'ids' in request.query_params:
-                qs.append(Q(pk__in=request.query_params['ids'].split(',')))
-            if 'within' in request.query_params:
-                qs.append(Q(created__gt=self.get_epoch(request.query_params['within'])))
-            if 'has' in request.query_params:
-                text_qs = list()
-                text_qs.append(Q(**{'title__icontains': request.query_params['has']}))
-                text_qs.append(Q(**{'description__icontains': request.query_params['has']}))
-                qs.append(reduce(operator.or_, text_qs))
 
-            if qs:
+            if 'ids' in data:
+                qs.append(Q(pk__in=data['ids'].split(',')))
                 job_posts = JobPost.objects.filter(reduce(operator.and_, qs))
             else:
-                job_posts = JobPost.objects.all()
-            if 'page' in request.query_params:
+                query = Query()
+                employers_by_text_dict = None
+                location_by_text_dict = None
+                if 'terms' in data and data['terms'] != '':
+                    query.terms = data['terms'].split(',')
+                if 'employerNames' in data and data['employerNames'] != '':
+                    employer_text = set(data['employerNames'].split(','))
+                    employers_by_text_dict = provider_client.search_by_text(employer_text, True)
+                    query.employer_names = employer_text
+                    # qs.append(Q(employer_profile_id__in=request.query_params['employerProfileIds'].split(',')))
+                if 'locations' in data and data['locations'] != '':
+                    location_names = set(data['locations'].split(','))
+                    location_by_text_dict = location_client.search_by_text(location_names, True)
+                    query.locations = location_names
+                    # qs.append(Q(location_id__in=request.query_params['locationIds'].split(',')))
+                job_posts = generate_match(query, employers_by_text_dict, location_by_text_dict)
+                for j in job_posts:
+                    print j.job_post_id
+            # text_qs = list()
+            # text_qs.append(Q(**{'title__icontains': request.query_params['has']}))
+            # text_qs.append(Q(**{'description__icontains': request.query_params['has']}))
+            # qs.append(reduce(operator.or_, text_qs))
+            if 'page' in data:
                 try:
-                    page = int(request.query_params['page'])
+                    page = int(data['page'])
                     paginator = Paginator(job_posts, page_size)
                     job_posts = paginator.page(page)
                 except PageNotAnInteger:
@@ -119,8 +138,9 @@ class JobPostSearch(APIView):
                 'job_post_count_for_search': paginator.count
             }
             return Response(ret)
-        except:
-            return Response(sys.exc_info()[0])
+        except Exception as e:
+            print '%s (%s)' % (e, type(e))
+            return Response(e.message)
 
     def get_epoch(self, epoch):
         return int(time.time()) - epoch

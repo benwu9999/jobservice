@@ -58,6 +58,10 @@ class Query(models.Model):
         return TIME_ZONE.localize(self.last_updated)
 
 
+DAILY = 'Daily'
+WEEKLY = 'Weekly'
+MONTHLY = 'Monthly'
+
 class Alert(models.Model):
     alert_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=200)
