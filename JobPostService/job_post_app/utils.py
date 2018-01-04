@@ -19,8 +19,9 @@ def get_location_ids(location_names, location_by_name_dict):
     return r
 
 
-def generate_match(query, employers_by_text_dict, location_by_text_dict):
+def generate_match(query, employers_by_text_dict, location_by_text_dict, additional_qs=list()):
     qs = list()
+    qs.extend(additional_qs)
 
     terms = query.terms
     if not terms:

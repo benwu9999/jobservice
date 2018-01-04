@@ -76,6 +76,7 @@ class JobPost(models.Model):
     description = models.CharField(max_length=200, null=True)
     employer_profile_id = models.UUIDField(primary_key=False, default=uuid.uuid4, editable=False)
     location_id = models.UUIDField(primary_key=False, default=uuid.uuid4, editable=False)
+    applicable = models.BooleanField(default=False)
     compensation = models.ForeignKey(
         Compensation,
         on_delete=models.SET_NULL,

@@ -17,16 +17,18 @@ TIME_ZONE = pytz.timezone(TIME_ZONE)
 class Query(models.Model):
     """
     location_id - the active location id of the user when this query is created
+
     profile_id - the active profile id of the user when this query is created
+
     commute - commute time in minutes
     """
     query_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    terms = models.CharField(max_length=400)
-    employer_names = models.CharField(max_length=400)
+    terms = models.CharField(max_length=400, null=True)
+    employer_names = models.CharField(max_length=400, null=True)
     commute = models.IntegerField(null=True)
     location_id = models.UUIDField(primary_key=False, default=uuid.uuid4, editable=False)
     profile_id = models.UUIDField(primary_key=False, default=uuid.uuid4, editable=False)
-    locations = models.CharField(max_length=400)
+    locations = models.CharField(max_length=400, null=True)
     shows_contact = models.BooleanField()
     min_comp = models.ForeignKey(
         Compensation,
@@ -42,7 +44,7 @@ class Query(models.Model):
         null=True,
         blank=True
     )
-    last_updated = UnixDateTimeField()
+    last_updated = UnixDateTimeField(null=True)
     created = UnixDateTimeField()
     modified = UnixDateTimeField(auto_now=True)
 
@@ -51,7 +53,9 @@ class Query(models.Model):
             self.created = datetime.datetime.now()
         elif type(self.created) is str:
             self.created = dateutil.parser.parse(self.created)
-        self.last_updated = make_aware(dateutil.parser.parse(self.last_updated), is_dst=True)
+        # self.last_updated = make_aware(dateutil.parser.parse(self.last_updated), is_dst=True)
+        if self.last_updated:
+            self.last_updated = dateutil.parser.parse(self.last_updated)
         super(Query, self).save()
 
     def last_updated_w_tz(self):

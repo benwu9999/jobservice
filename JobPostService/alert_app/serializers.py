@@ -14,9 +14,18 @@ class QuerySerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         ret = super(QuerySerializer, self).to_representation(instance)
-        ret['terms'] = ret['terms'].split(',')
-        ret['employer_names'] = ret['employer_names'].split(',')
-        ret['locations'] = ret['locations'].split(',')
+        if ret['terms']:
+            ret['terms'] = ret['terms'].split(',')
+        else:
+            ret['terms'] = None
+        if ret['employer_names']:
+            ret['employer_names'] = ret['employer_names'].split(',')
+        else:
+            ret['employer_names'] = None
+        if ret['locations']:
+            ret['locations'] = ret['locations'].split(',')
+        else:
+            ret['locations'] = None
         return ret
 
 class AlertSerializer(serializers.ModelSerializer):

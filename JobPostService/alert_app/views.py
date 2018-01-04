@@ -23,26 +23,42 @@ class AlertConfigList(generics.ListCreateAPIView):
     serializer_class = AlertSerializer
 
     def post(self, request, *args, **kwargs):
-        alert_d = request.data
-        # alert_d['employer_profile_id'] = alert_d.pop('employer_profile')['profile_id']
-        # alert_d['location_id'] = alert_d.pop('location')['location_id']
-        if 'alert_id' not in alert_d:
-            okStatus = status.HTTP_201_CREATED
-        else:
-            okStatus = status.HTTP_200_OK
+        try:
+            alert_d = request.data
+            # alert_d['employer_profile_id'] = alert_d.pop('employer_profile')['profile_id']
+            # alert_d['location_id'] = alert_d.pop('location')['location_id']
+            if 'alert_id' not in alert_d:
+                okStatus = status.HTTP_201_CREATED
+            else:
+                okStatus = status.HTTP_200_OK
 
-        alert_d['query']['terms'] = ','.join(alert_d['query']['terms'])
-        alert_d['query']['employer_names'] = ','.join(alert_d['query']['employer_names'])
-        alert_d['query']['locations'] = ','.join(alert_d['query']['locations'])
-        query = Query(**alert_d.pop('query'))
-        query.save()
+            if alert_d['query']['terms']:
+                alert_d['query']['terms'] = ','.join(alert_d['query']['terms'])
+            else:
+                alert_d['query']['terms'] = None
 
-        alert_d['query'] = query
+            if alert_d['query']['employer_names']:
+                alert_d['query']['employer_names'] = ','.join(alert_d['query']['employer_names'])
+            else:
+                alert_d['query']['employer_names'] = None
 
-        alert = Alert(**alert_d)
-        alert.save()
+            if alert_d['query']['locations']:
+                alert_d['query']['locations'] = ','.join(alert_d['query']['locations'])
+            else:
+                alert_d['query']['locations'] = None
+            query = Query(**alert_d.pop('query'))
+            query.save()
 
-        return Response(AlertSerializer(alert).data, status=okStatus)
+            alert_d['query'] = query
+
+            alert = Alert(**alert_d)
+            alert.save()
+
+            return Response(AlertSerializer(alert).data, status=okStatus)
+
+        except Exception as e:
+            print '%s (%s)' % (e, type(e))
+            return Response(e.message)
 
 
 class AlertConfigDetail(generics.RetrieveUpdateDestroyAPIView):

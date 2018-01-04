@@ -32,7 +32,6 @@ import json
 
 logger = logging.getLogger(__name__)
 
-
 # asc = ApplicationServiceClient();
 # usc = UserServiceClient();
 
@@ -49,6 +48,7 @@ logger = logging.getLogger(__name__)
 
 provider_client = ProviderProfileServiceClient(PROVIDER_PROFILE_SERVICE_URL)
 location_client = LocationServiceClient(LOCATION_SERVICE_URL)
+
 
 # uncomment the line below if you want to enable csrf protection for this view
 # @method_decorator(csrf_protect, name='post')
@@ -87,12 +87,16 @@ class JobPostDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = JobPost.objects.all()
     serializer_class = JobPostSerializer
 
+DEFAULT_PAGE_SIZE = 10
 
 class JobPostSearch(APIView):
     def get(self, request, format=None):
         try:
             data = request.query_params
-            page_size = data['pageSize']
+            if 'pageSize' in data:
+                page_size = data['pageSize']
+            else:
+                page_size = DEFAULT_PAGE_SIZE
             qs = list()
 
             if 'ids' in data:
@@ -102,6 +106,11 @@ class JobPostSearch(APIView):
                 query = Query()
                 employers_by_text_dict = None
                 location_by_text_dict = None
+                qs = list()
+                if 'employerProfileIds' in request.query_params:
+                    qs.append(Q(employer_profile_id__in=request.query_params['employerProfileIds'].split(',')))
+                if 'locationIds' in request.query_params:
+                    qs.append(Q(location_id__in=request.query_params['locationIds'].split(',')))
                 if 'terms' in data and data['terms'] != '':
                     query.terms = data['terms'].split(',')
                 if 'employerNames' in data and data['employerNames'] != '':
@@ -114,7 +123,7 @@ class JobPostSearch(APIView):
                     location_by_text_dict = location_client.search_by_text(location_names, True)
                     query.locations = location_names
                     # qs.append(Q(location_id__in=request.query_params['locationIds'].split(',')))
-                job_posts = generate_match(query, employers_by_text_dict, location_by_text_dict)
+                job_posts = generate_match(query, employers_by_text_dict, location_by_text_dict, qs)
                 for j in job_posts:
                     print j.job_post_id
             # text_qs = list()
