@@ -1,4 +1,6 @@
-setup using pycharm
+#########################################
+# setup project using pycharm
+#########################################
 1. This project requires Django which requires MYSQL dependency
 install MYSQL dependency (probably a "native" lib)
 2. setup MYSQL for data storage, you can either method a) or b)
@@ -28,14 +30,39 @@ requirements.txt
 5. run manage.py runserver
 
 
-sample compensation json string for "http://localhost:8000/docs/"
-
-{
-    "amount": 1,
-    "duration": "day"
-}
-
-
-how to add message to jinja template
+#########################################
+# how to add message to jinja template
+#########################################
 1. add new message in po files
 2. create mo file using msgfmt, i.e. command is "msgfmt po_file", i.e: msgfmt messages.po
+
+#########################################
+# migrate database changes to google cloud sql
+#########################################
+
+1. add a database entry in the settings file (this should be part of the code) and mapping the ssl key files, i.e.:
+
+    DATABASES = {
+            'default': {
+                ...
+            },
+            'prod': {
+                'ENGINE': 'django.db.backends.mysql',
+                'HOST': '35.185.70.133',
+                'PORT': '3306',
+                'NAME': 'job_post',
+                'USER': 'oneseek',
+                'PASSWORD': 'jobpost8531162',
+                'OPTIONS': {
+                    'ssl': {
+                        # replace the paths here with your files
+                        'key': '/home/beanryu/Downloads/client-key.pem',
+                        'cert': '/home/beanryu/Downloads/client-cert.pem',
+                        'ca': '/home/beanryu/Downloads/server-ca.pem',
+                    }
+                }
+            }
+        }
+2. run migration against the database (might need to run makemigration first if haven't done so):
+command to run: python manage.py migrate --database=<NAME_OF_GOOGLE_CLOUD_SQL_DATABASE>
+i.e. with the database entry in the example above:  python manage.py migrate --database=prod

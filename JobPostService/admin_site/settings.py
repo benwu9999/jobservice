@@ -71,7 +71,8 @@ CSRF_COOKIE_NAME = 'XSRF-TOKEN'
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ORIGIN_WHITELIST = (
-    'http://localhost:4200'
+    'http://localhost:4200',
+    'http://172.17.0.2:4200'
 )
 
 REST_FRAMEWORK = {
@@ -137,44 +138,60 @@ else:
             'NAME': 'job_post',
             'USER': 'oneseek',
             'PASSWORD': 'jobpost8531162',
+        },
+        'prod': {
+            'ENGINE': 'django.db.backends.mysql',
+            'HOST': '35.185.70.133',
+            'PORT': '3306',
+            'NAME': 'job_post',
+            'USER': 'oneseek',
+            'PASSWORD': 'jobpost8531162',
+            'OPTIONS': {
+                'ssl': {
+                    # replace the paths here with your files
+                    'key': '/home/beanryu/Downloads/client-key.pem',
+                    'cert': '/home/beanryu/Downloads/client-cert.pem',
+                    'ca': '/home/beanryu/Downloads/server-ca.pem',
+                }
+            }
         }
     }
 
-# Password validation
-# https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
+    # Password validation
+    # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
 
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
+    AUTH_PASSWORD_VALIDATORS = [
+        {
+            'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        },
+        {
+            'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        },
+        {
+            'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        },
+        {
+            'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        },
+    ]
 
-# Internationalization
-# https://docs.djangoproject.com/en/1.10/topics/i18n/
+    # Internationalization
+    # https://docs.djangoproject.com/en/1.10/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+    LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+    TIME_ZONE = 'UTC'
 
-USE_I18N = True
+    USE_I18N = True
 
-USE_L10N = True
+    USE_L10N = True
 
-USE_TZ = True
+    USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.10/howto/static-files/
-STATIC_ROOT = 'static'
-STATIC_URL = '/static/'
+    # Static files (CSS, JavaScript, Images)
+    # https://docs.djangoproject.com/en/1.10/howto/static-files/
+    STATIC_ROOT = 'static'
+    STATIC_URL = '/static/'
 
-PROVIDER_PROFILE_SERVICE_URL = None
-LOCATION_SERVICE_URL = None
+    PROVIDER_PROFILE_SERVICE_URL = None
+    LOCATION_SERVICE_URL = None
