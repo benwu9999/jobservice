@@ -1,7 +1,6 @@
 import operator
 
 from django.core.management.base import BaseCommand
-from django.db.models import Q
 from location_service_api import commute_service_utils
 from location_service_api.commute_service_client import CommuteServiceClient
 from location_service_api.location_service_client import LocationServiceClient
@@ -14,16 +13,32 @@ from job_post_app.models import JobPost
 # cd ~/job-post-service/JobPostService && python manage.py generate_alert
 from management.commands.email_client import EmailClient
 from job_post_app.utils import generate_match
+from collections import defaultdict
+
+
+class Result(object):
+
+    def __init__(self, id, alert=None, job_posts=None, email=None):
+        self.id = id
+        self.alert = alert
+        self.job_posts = job_posts
+        self.email = None
+
+    def __eq__(self, other):
+        return self.id == other.id
+
+    def __hash__(self):
+        return hash(self.id)
 
 
 class Command(BaseCommand):
     help = 'generate alerts'
 
-    commute_cache = dict();
-    user_client = None;
-    provider_client = None;
-    location_client = None;
-    commute_client = None;
+    commute_cache = dict()
+    user_client = None
+    provider_client = None
+    location_client = None
+    commute_client = None
 
     email_client = EmailClient()
 
@@ -49,7 +64,7 @@ class Command(BaseCommand):
         print "generating alerts..."
 
         url = options[self.user_service_url_cmd]
-        self.user_client = UserServiceClient(url);
+        self.user_client = UserServiceClient(url)
 
         url = options[self.provider_profile_service_url_cmd]
         self.provider_client = ProviderProfileServiceClient(url)
@@ -77,12 +92,14 @@ class Command(BaseCommand):
 
         employer_text = set()
         for q in queries:
-            employer_text.update(q.employer_names)
+            if q.employer_names:
+                employer_text.update(q.employer_names)
         employers_by_text_dict = self.provider_client.search_by_text(employer_text, True)
 
         location_names = set()
         for q in queries:
-            location_names.update(q.locations)
+            if q.locations:
+                location_names.update(q.locations)
         location_by_text_dict = self.location_client.search_by_text(location_names, True)
 
         results = []
@@ -96,16 +113,20 @@ class Command(BaseCommand):
             print "final result"
             for m in matched_job_posts:
                 print m
-            results.append([alert, matched_job_posts])
+            if matched_job_posts:
+                results.append(Result(alert.alert_id.hex, alert, matched_job_posts))
 
+        self.add_default_commute_info(results)
         results = self.filter_job_posts_with_commute(results)
 
         location_ids = []
         for result in results:
-            query = result[0].query
-            location_ids.extend([j.location_id for j in result[1]])
+            query = result.alert.query
+            location_ids.extend([j.location_id for j in result.job_posts])
+            if query.location_id is not None:
+                location_ids.append(query.location_id)
             email = email_d[query_id_to_user_id_d[query.query_id]]
-            result.append(email)
+            result.email = email
 
         # get list of location ids from final matched job posts
         locations = self.location_client.get(location_ids)
@@ -113,15 +134,22 @@ class Command(BaseCommand):
         for location in locations:
             location_id_to_location_dict[location['locationId'].replace('-', '')] = location
         for result in results:
-            for job_post in result[1]:
+            result.alert.query.location = location_id_to_location_dict[result.alert.query.location_id]
+            for job_post in result.job_posts:
                 job_post.location = location_id_to_location_dict[job_post.location_id]
         self.process(results)
         print "finished generating alerts"
 
+    def add_default_commute_info(self, results):
+        for result in results:
+            for job_post in result.job_posts:
+                job_post.transit_commute = 'N/A'
+                job_post.drive_commute = 'N/A'
+
     # def generate_match(self, query, employers_by_text_dict, location_by_text_dict):
     #     qs = list()
     #
-    #     query_set = JobPost.objects.all();
+    #     query_set = JobPost.objects.all()
     #
     #     terms = query.terms
     #     if terms:
@@ -170,13 +198,13 @@ class Command(BaseCommand):
 
             output - a list of tuple 'result' after filtering out job posts which do not satisfying commute restraint
         """
-        origin_to_dests_d = dict()
-        location_id_to_result = dict()
-        location_id_to_job_post = dict()
+        origin_to_dests_d = defaultdict(set)
+        location_id_to_result = defaultdict(set)
+        location_id_to_job_post = defaultdict(set)
 
         for result in results:
-            alert = result[0]
-            matched_job_posts = result[1]
+            alert = result.alert
+            matched_job_posts = result.job_posts
             filtered_job_posts = []
             query = alert.query
             if not query.commute:
@@ -192,18 +220,14 @@ class Command(BaseCommand):
                     # else query commute service and create map of
                     # [location id of job posts -> list of job posts associated with the location id]
                     else:
-                        if query.location_id not in origin_to_dests_d:
-                            origin_to_dests_d[query.location_id] = list()
-                        origin_to_dests_d[query.location_id].append(job_post.location_id)
-                        if job_post.location_id not in location_id_to_result:
-                            location_id_to_result[job_post.location_id] = []
-                        location_id_to_result[job_post.location_id].append(result)
-                        if job_post.location_id not in location_id_to_job_post:
-                            location_id_to_job_post[job_post.location_id] = []
-                        location_id_to_job_post[job_post.location_id].append(job_post)
-            result[1] = filtered_job_posts
+                        origin_to_dests_d[query.location_id].add(job_post.location_id)
+                        location_id_to_result[job_post.location_id].add(result)
+                        location_id_to_job_post[job_post.location_id].add(job_post)
+            result.job_posts = filtered_job_posts
 
         if origin_to_dests_d:
+            for k in origin_to_dests_d:
+                origin_to_dests_d[k] = list(origin_to_dests_d[k])
             d = self.commute_client.query_pair(origin_to_dests_d)
             for key in d:
                 commute = d[key]
@@ -211,9 +235,9 @@ class Command(BaseCommand):
                 job_post_location_id = key.split('-')[1]
                 for result in location_id_to_result[job_post_location_id]:
                     for job_post in location_id_to_job_post[job_post_location_id]:
-                        if self.commute_less(result[0].query, commute):
+                        if self.commute_less(result.alert.query, commute):
                             self.add_commute(commute, job_post)
-                            result[1].append(job_post)
+                            result.job_posts.append(job_post)
         return results
 
     def add_commute(self, commute, job_post):
@@ -264,10 +288,16 @@ class Command(BaseCommand):
             query = alert.query
             query.query_id = query.query_id.hex
             query.location_id = query.location_id.hex
-            query.profile_id = query.profile_id.hex
+            # query.profile_id = query.profile_id.hex
             query_id_to_user_id_d[query.query_id] = alert_id_to_user_id_d[str(alert.alert_id)]
-            query.employer_names = query.employer_names.split(',')
-            query.locations = query.locations.split(',')
+            if query.employer_names:
+                query.employer_names = query.employer_names.split(',')
+            else:
+                query.employer_names = []
+            if query.locations:
+                query.locations = query.locations.split(',')
+            else:
+                query.locations = []
             query.terms = query.terms.split(',')
             queries.append(query)
         return queries, query_id_to_user_id_d

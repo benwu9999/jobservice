@@ -30,3 +30,9 @@ skip_files:
 - ^(.*/)?.*/RCS/.*$
 - ^(.*/)?\..*$
 - ^env/.*$
+
+env_variables:
+  PROVIDER_PROFILE_SERVICE_URL: 'http://user-service-dot-perfect-entry-162216.appspot.com/providerProfile/'
+  USER_SERVICE_URL: 'http://user-service-dot-perfect-entry-162216.appspot.com/user/'
+  LOCATION_SERVICE_URL: 'http://location-service-dot-perfect-entry-162216.appspot.com/location/'
+  COMMUTE_SERVICE_URL: 'http://location-service-dot-perfect-entry-162216.appspot.com/commute/'

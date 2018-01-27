@@ -73,7 +73,7 @@ class JobPost(models.Model):
 
     job_post_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=200, null=True)
-    description = models.CharField(max_length=200, null=True)
+    description = models.CharField(max_length=6000, null=True)
     employer_profile_id = models.UUIDField(primary_key=False, default=uuid.uuid4, editable=False)
     location_id = models.UUIDField(primary_key=False, default=uuid.uuid4, editable=False)
     applicable = models.BooleanField(default=False)
@@ -103,6 +103,11 @@ class JobPost(models.Model):
     def __str__(self):
         return "%s %s" % (self.__class__.__name__, self.job_post_id)
 
+    def __eq__(self, other):
+        return self.job_post_id == other.job_post_id
+
+    def __hash__(self):
+        return hash(self.job_post_id)
 
 # class Query(models.Model):
 #     query_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

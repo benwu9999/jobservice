@@ -8,7 +8,7 @@
 
     </mj-head>
     <mj-body>
-        <mj-container>
+        <mj-container width="850px">
             <mj-navbar background-color="#ef6452">
                 <mj-column width="80%">
                     <mj-image align="left" width="150px" src="https://mjml.io/assets/img/logo-white-small.png"
@@ -32,45 +32,55 @@
 
 
             <!-- Body -->
+            {% for alert_id, entry in data.iteritems() %}
             <mj-section>
                 <mj-column>
+                    <mj-text>{{ _("alert_name") }}: {{ entry['alert_name']|e }}</mj-text>
+                    <mj-text>{{ _("commute_departure_location") }}: {{ entry['alert_location']|e }}</mj-text>
                     <mj-table>
                         <tr style="border-bottom:1px solid #ecedee;text-align:left;padding:15px 0;">
-                            <th style="padding: 0 15px 0 0;">{{ _("address") }}</th>
-                            <th style="padding: 0 15px;">{{ _("job_post_description") }}</th>
-                            <th style="padding: 0 0 0 15px;">{{ _("commute") }}</th>
-                            <th style="padding: 0 0 0 15px;">{{ _("created_time") }}</th>
+                            <th>{{ _("address") }}</th>
+                            <th>{{ _("job_post_description") }}</th>
+                            <th>{{ _("commute") }}</th>
+                            <th>{{ _("contact") }}</th>
+                            <th>{{ _("created_time") }}</th>
                         </tr>
                         <tr>
                             <td style="padding: 0 0 1em 0;"></td>
                         </tr>
 
-                        {% for job_post in job_posts %}
+                        {% for job_post in entry['job_posts'] %}
+
                         <tr {{ loop.cycle(
                         'style="background: whitesmoke;"', '') }} >
-                        <td nowrap style="padding: 0 15px 0 0;">
+                        <td style="padding: 0 2px 0 0;">
                             {{ job_post.location|e }}
                             <a href="{{ job_post.location_link|e }}">{{ _("details") }}</a>
                         </td>
-                        <td style="font-size:1em;">
-                            {{ job_post.description|e }}
-                            <a href="link">{{ _("details") }}</a>
+                        <td style="padding: 0 2px 0 0; font-size:1em;">
+                            {{ job_post.title|e }}
+                            <a href="{{ job_post.job_post_id|e }}">{{ _("details") }}</a>
                         </td>
-                        <td style="font-size:1em;">
+                        <td style="padding: 0 2px 0 0; font-size:1em;">
                             drive: {{ job_post.transit_commute|e }}
                             <br>
                             transit: {{ job_post.drive_commute|e }}
                         </td>
-                        <td nowrap style="padding: 0 0 0 15px; font-size:1em;">
+                        <td style="padding: 0 2px 0 0; font-size:1em;">
+                            {{ job_post.email|e }}
+                            <br>
+                            {{ job_post.phone|e }}
+                        </td>
+                        <td style="padding: 0 2px 0 0; font-size:1em;">
                             {{ job_post.created_time|e }}
                         </td>
                         </tr>
                         {% endfor %}
-
                     </mj-table>
 
                 </mj-column>
             </mj-section>
+            {% endfor %}
 
             <mj-section>
                 <mj-column>
@@ -86,6 +96,10 @@
                         <a href="https://mjml.io" style="color:silver">
                             update preference
                         </a>
+                    </mj-text>
+                </mj-column>
+                <mj-column>
+                    <mj-text>
                         <a href="https://mjml.io" style="color:silver">
                             unsubscribe
                         </a>

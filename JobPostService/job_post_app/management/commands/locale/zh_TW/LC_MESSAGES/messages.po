@@ -53,3 +53,11 @@ msgid "footer_update_preference"
 msgstr "更新訂閱"
 msgid "footer_unsubscribe"
 msgstr "取消訂閱"
+
+msgid "alert_name"
+msgstr "通知名称"
+msgid "commute_departure_location"
+msgstr "通勤出门地点"
+
+msgid "contact"
+msgstr "联系"

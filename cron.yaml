@@ -1,0 +1,5 @@
+cron:
+- description: daily job post alert job
+  url: /jobPostAlert/generateEmail?alert_freq=daily
+  target: job-post-service
+  schedule: every day 19:00

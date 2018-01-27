@@ -10,7 +10,8 @@ from collections import defaultdict
 import os
 import jinja2
 import i18n
-from management.commands import alert_generator_util
+import alert_generator_util
+from admin_site.settings import UI_JOB_POST_URL_PREFIX
 
 env = jinja2.Environment(
     loader=jinja2.FileSystemLoader(
@@ -39,46 +40,71 @@ class EmailClient:
         recpt_variables_d = defaultdict(dict)
         emails = list()
         for result in results:
-            alert = result[0]
-            matches = result[1]
-            email = result[2]
-            recpt_variables_d[email]['alert_name'] = 'Oneseek job post matches for alert "{0}"'.format(alert.name)
-            recpt_variables_d[email]['email_text'] = self._get_email_text(matches)
-            emails.append(email)
+            alert = result.alert
+            matches = result.job_posts
+            email = result.email
+            if email and matches:
+                if True:  # for English emails
+                    # if email not in recpt_variables_d:
+                    #     recpt_variables_d[email]['alerts'] = []
+                    recpt_variables_d[email]['subject'] = 'Oneseek job post matches for '.format(
+                        alert.name.encode('utf8'))
+                    if 'alerts' not in recpt_variables_d[email]:
+                        recpt_variables_d[email]['alerts'] = dict()
+                    recpt_variables_d[email]['alerts'][alert.alert_id.hex] = {
+                        'alert_name': alert.name,
+                        'alert_location': alert.query.location,
+                        'matches': matches}
+                emails.append(email)
             # "recipient-variables": ('{"bob@example.com": {"first":"Bob", "id":1}, '
             #                         '"alice@example.com": {"first":"Alice", "id": 2}}')
 
-        request_url = 'https://api.mailgun.net/v2/{0}/messages'.format(self.sandbox)
-        recpt_variables = json.dumps(recpt_variables_d)
-        request = requests.post(
-            request_url,
-            auth=("api", self.key),
-            data={"from": "hello@example.com",
-                  "to": emails,
-                  "subject": "%recipient.alert_name%",
-                  "text": 'html version of email failed to display',
-                  "html": '%recipient.email_text%',
-                  "recipient-variables": recpt_variables
-                  }
-        )
+        for email_dict in recpt_variables_d.values():
+            email_dict['email_text'] = self._get_email_text(email_dict.pop('alerts'))
 
-        print('Status: {0}'.format(request.status_code))
-        print('Body:   {0}'.format(request.text))
+        if emails:
+            request_url = 'https://api.mailgun.net/v2/{0}/messages'.format(self.sandbox)
+            recpt_variables = json.dumps(recpt_variables_d)
+            request = requests.post(
+                request_url,
+                auth=("api", self.key),
+                data={"from": "hello@example.com",
+                      "to": emails,
+                      "subject": "%recipient.subject%",
+                      "text": 'html version of email failed to display',
+                      "html": '%recipient.email_text%',
+                      "recipient-variables": recpt_variables
+                      }
+            )
+            print('Status: {0}'.format(request.status_code))
+            print('Body:   {0}'.format(request.text))
+        else:
+            print('no email sent')
 
-    def _get_email_text(self, matches):
+    def _get_email_text(self, alerts_dict):
         i18n.setLocale("zh_TW")
-        d = dict()
-        job_posts = list()
-        for m in matches:
-            location_str = alert_generator_util.format_location(m.location)
-            job_post = {'description': m.title + ' - ' + m.description,
-                        'location': location_str,  # seems Gmail automatically links a valid location to Google map
-                        'location_link': alert_generator_util.get_location_link(location_str),
-                        'transit_commute': m.transit_commute,
-                        'drive_commute': m.drive_commute
-                        }
-            job_posts.append(job_post)
-        d['job_posts'] = job_posts
+
+        d = {'data': defaultdict(dict)}
+        for alert_id, entry in alerts_dict.iteritems():
+            job_posts = list()
+            for m in entry['matches']:
+                location_str = alert_generator_util.format_location(m.location)
+                job_post = {
+                            'job_post_id': UI_JOB_POST_URL_PREFIX + m.job_post_id.hex,
+                            'title': m.title,
+                            'description': m.description,
+                            'email': 'blah@blahcom',
+                            'phone': '6463883224',
+                            'location': location_str,  # seems Gmail automatically links a valid location to Google map
+                            'location_link': alert_generator_util.get_location_link(location_str),
+                            'transit_commute': m.transit_commute,
+                            'drive_commute': m.drive_commute,
+                            'created_time': m.created.strftime('%Y-%m-%d')
+                            }
+                job_posts.append(job_post)
+            d['data'][alert_id]['alert_location'] = self._to_location_str(entry['alert_location'])
+            d['data'][alert_id]['alert_name'] = entry['alert_name']
+            d['data'][alert_id]['job_posts'] = job_posts
 
         jinja = self.template.render(d).encode('utf-8')
         with open("temp.mjml", "w") as text_file:
@@ -86,6 +112,10 @@ class EmailClient:
 
         email_text = getoutput("mjml --stdout %s" % ("temp.mjml"))
         return email_text
+
+    @staticmethod
+    def _to_location_str(location_d):
+        return "(" + location_d['name'] + ") " + location_d['streetAddress'] + ", " + location_d['city'] + ", " + location_d['state'] + ", " + str(location_d['zipCode']);
 
     @staticmethod
     def _to_str(matches):

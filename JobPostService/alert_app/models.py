@@ -26,8 +26,8 @@ class Query(models.Model):
     terms = models.CharField(max_length=400, null=True)
     employer_names = models.CharField(max_length=400, null=True)
     commute = models.IntegerField(null=True)
-    location_id = models.UUIDField(primary_key=False, default=uuid.uuid4, editable=False)
-    profile_id = models.UUIDField(primary_key=False, default=uuid.uuid4, editable=False)
+    location_id = models.UUIDField(primary_key=False, null=True, editable=False)
+    profile_id = models.UUIDField(primary_key=False, null=True, editable=False)
     locations = models.CharField(max_length=400, null=True)
     shows_contact = models.BooleanField()
     min_comp = models.ForeignKey(

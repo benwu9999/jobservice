@@ -72,9 +72,11 @@ CORS_ALLOW_CREDENTIALS = True
 
 # cannot specify port 80, other port can be specified i.e. localhost:4200
 CORS_ORIGIN_WHITELIST = (
-    'localhost',
+    'localhost:4200',
     '172.17.0.2',  # local docker ip on machine molly
-    '107.178.244.0'  # static GAE ip
+    '107.178.244.0',  # static GAE ip
+    'user-service-dot-perfect-entry-162216.appspot.com',
+    'location-service-dot-perfect-entry-162216.appspot.com',
 )
 
 REST_FRAMEWORK = {
@@ -195,5 +197,9 @@ USE_TZ = True
 STATIC_ROOT = 'static'
 STATIC_URL = '/static/'
 
-PROVIDER_PROFILE_SERVICE_URL = None
-LOCATION_SERVICE_URL = None
+PROVIDER_PROFILE_SERVICE_URL = os.environ.get('PROVIDER_PROFILE_SERVICE_URL', None)
+LOCATION_SERVICE_URL = os.environ.get('LOCATION_SERVICE_URL', None)
+COMMUTE_SERVICE_URL = os.environ.get('COMMUTE_SERVICE_URL', None)
+USER_SERVICE_URL = os.environ.get('USER_SERVICE_URL', None)
+
+UI_JOB_POST_URL_PREFIX = 'http://localhost:4200/dashboard/jobpost/'
