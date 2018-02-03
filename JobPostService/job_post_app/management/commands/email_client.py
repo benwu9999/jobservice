@@ -52,6 +52,7 @@ class EmailClient:
                     if 'alerts' not in recpt_variables_d[email]:
                         recpt_variables_d[email]['alerts'] = dict()
                     recpt_variables_d[email]['alerts'][alert.alert_id.hex] = {
+                        'user_id' : result.user_id,
                         'alert_name': alert.name,
                         'alert_location': alert.query.location,
                         'matches': matches}
@@ -90,7 +91,7 @@ class EmailClient:
             for m in entry['matches']:
                 location_str = alert_generator_util.format_location(m.location)
                 job_post = {
-                            'job_post_id': UI_JOB_POST_URL_PREFIX + m.job_post_id.hex,
+                            'job_post_id': UI_JOB_POST_URL_PREFIX + m.job_post_id.hex + '?userId=' + entry['user_id'],
                             'title': m.title,
                             'description': m.description,
                             'email': 'blah@blahcom',

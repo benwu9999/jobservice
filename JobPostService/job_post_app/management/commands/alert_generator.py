@@ -18,11 +18,12 @@ from collections import defaultdict
 
 class Result(object):
 
-    def __init__(self, id, alert=None, job_posts=None, email=None):
+    def __init__(self, id, alert=None, job_posts=None, email=None, user_id=None):
         self.id = id
         self.alert = alert
         self.job_posts = job_posts
-        self.email = None
+        self.email = email
+        self.user_id = user_id
 
     def __eq__(self, other):
         return self.id == other.id
@@ -110,9 +111,6 @@ class Command(BaseCommand):
             for job_post in matched_job_posts:
                 job_post.location_id = job_post.location_id.hex
                 job_post.employer_profile_id = job_post.employer_profile_id.hex
-            print "final result"
-            for m in matched_job_posts:
-                print m
             if matched_job_posts:
                 results.append(Result(alert.alert_id.hex, alert, matched_job_posts))
 
@@ -125,8 +123,10 @@ class Command(BaseCommand):
             location_ids.extend([j.location_id for j in result.job_posts])
             if query.location_id is not None:
                 location_ids.append(query.location_id)
-            email = email_d[query_id_to_user_id_d[query.query_id]]
+            user_id = query_id_to_user_id_d[query.query_id]
+            email = email_d[user_id]
             result.email = email
+            result.user_id = user_id
 
         # get list of location ids from final matched job posts
         locations = self.location_client.get(location_ids)
@@ -199,7 +199,7 @@ class Command(BaseCommand):
             output - a list of tuple 'result' after filtering out job posts which do not satisfying commute restraint
         """
         origin_to_dests_d = defaultdict(set)
-        location_id_to_result = defaultdict(set)
+        alert_location_id_to_result = defaultdict(set)
         location_id_to_job_post = defaultdict(set)
 
         for result in results:
@@ -221,7 +221,7 @@ class Command(BaseCommand):
                     # [location id of job posts -> list of job posts associated with the location id]
                     else:
                         origin_to_dests_d[query.location_id].add(job_post.location_id)
-                        location_id_to_result[job_post.location_id].add(result)
+                        alert_location_id_to_result[alert.query.location_id].add(result)
                         location_id_to_job_post[job_post.location_id].add(job_post)
             result.job_posts = filtered_job_posts
 
@@ -232,11 +232,15 @@ class Command(BaseCommand):
             for key in d:
                 commute = d[key]
                 self.commute_cache[key] = commute
-                job_post_location_id = key.split('-')[1]
-                for result in location_id_to_result[job_post_location_id]:
+                ele = key.split('-')
+                alert_location_id = ele[0]
+                job_post_location_id = ele[1]
+                print('***' + job_post_location_id)
+                for result in alert_location_id_to_result[alert_location_id]:
                     for job_post in location_id_to_job_post[job_post_location_id]:
                         if self.commute_less(result.alert.query, commute):
                             self.add_commute(commute, job_post)
+                            print(result.alert.alert_id.hex + " " + job_post.job_post_id.hex)
                             result.job_posts.append(job_post)
         return results
 
