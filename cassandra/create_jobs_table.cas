@@ -1,0 +1,15 @@
+use jobservice;
+
+CREATE TABLE jobs (
+	jobId uuid PRIMARY KEY,
+  	jobType text,
+  	title text,
+  	description text,
+	compensation frozen <compensation>,
+	benefits list<frozen <benefit>>,
+	location frozen <address>,
+	employerId uuid,
+	duties list<frozen <duty>>,
+	requiredSkills list<uuid>,
+	preferedSkills list<uuid>
+);

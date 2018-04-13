@@ -1,7 +1,7 @@
-*.pyc
 JobPostService/lib/*
 JobPostService/alert_app/migrations/*
 JobPostService/job_post_app/migrations/*
 JobPostService/application_app/migrations/*
 JobPostServiceApi/dist
 JobPostServiceApi/job_post_service_client.egg-info
+
